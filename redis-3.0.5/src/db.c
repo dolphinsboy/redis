@@ -280,6 +280,7 @@ void flushallCommand(redisClient *c) {
             return;
         }
     }
+    sdsfreesplitres(v,vlen);
     //=========end=guosong====
     signalFlushedDb(-1);
     server.dirty += emptyDb(NULL);
