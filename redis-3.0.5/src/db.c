@@ -262,19 +262,23 @@ void flushdbCommand(redisClient *c) {
 void flushallCommand(redisClient *c) {
     //=========begin=guosong====
     char *addr = getClientPeerId(c);
+    //addr 输出结果为10.30.6.217:53401 
+    //
+    int vlen;
+    sds ip;
+    sds port;
+    sds *v = sdssplitlen(addr,strlen(addr),":",1,&vlen); 
 
-    char ip[16];
-    int port;
+    if (vlen == 2){
+        ip = v[0];
 
-    sscanf(addr,"%[^:]:%d", ip, &port);
-    printf("%s\n", ip);
-
-    //addr 输出结果为10.30.6.217:53401
-    if(listSearchKey(server.admin_hosts, ip) == NULL ){
-        char msg[64];
-        sprintf(msg, "%s %s %d", ip, "Forbidden admin hosts", strlen(ip));
-        addReplyError(c,msg);
-        return;
+        //不是本机操作
+        if(listSearchKey(server.admin_hosts, ip) == NULL ){
+            char msg[64];
+            sprintf(msg, "%s %s %d listlen=%d cmp=%d", ip, "Forbidden admin hosts", strlen(ip),server.admin_hosts->len, strcmp(ip, "127.0.0.1"));
+            addReplyError(c,msg);
+            return;
+        }
     }
     //=========end=guosong====
     signalFlushedDb(-1);

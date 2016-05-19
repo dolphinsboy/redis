@@ -1402,6 +1402,17 @@ void createSharedObjects(void) {
     shared.maxstring = createStringObject("maxstring",9);
 }
 
+//===========begin=========guosong===========
+
+int admin_hosts_match(void *key1, void*key2)
+{
+    if(strcmp(key1, key2) == 0)
+        return 1;
+    else 
+        return 0;
+}
+//===========end==========guosong===========    
+
 void initServerConfig(void) {
     int j;
 
@@ -1556,6 +1567,13 @@ void initServerConfig(void) {
     server.assert_line = 0;
     server.bug_report_start = 0;
     server.watchdog_period = 0;
+
+    /*Admin Hosts */
+    //============guosong======begin=======
+    server.admin_hosts = listCreate();
+    server.admin_hosts->match = &admin_hosts_match;
+    listAddNodeTail(server.admin_hosts, "127.0.0.1");
+    //============guosong======end=======
 }
 
 /* This function will try to raise the max number of open files accordingly to
@@ -1766,9 +1784,6 @@ void initServer(void) {
     server.pid = getpid();
     server.current_client = NULL;
     server.clients = listCreate();
-    //===========begin=========guosong
-    server.admin_hosts = listCreate();
-    //===========end==========guosong
     server.clients_to_close = listCreate();
     server.slaves = listCreate();
     server.monitors = listCreate();
@@ -1778,7 +1793,6 @@ void initServer(void) {
     server.clients_waiting_acks = listCreate();
     server.get_ack_from_slaves = 0;
     server.clients_paused = 0;
-
     createSharedObjects();
     adjustOpenFilesLimit();
     server.el = aeCreateEventLoop(server.maxclients+REDIS_EVENTLOOP_FDSET_INCR);

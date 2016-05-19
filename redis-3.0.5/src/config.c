@@ -544,14 +544,17 @@ void loadServerConfigFromString(char *config) {
         //===========guosong===begin===
         else if (!strcasecmp(argv[0], "admin-hosts")){
             printf("########################admin-hosts argc=%d\n", argc);
-
             int i;
+            
+            //for(i = 1; i < argc; i++){
             for(i = 1; i < argc; i++){
-                if (server.admin_hosts == NULL)
-                    server.admin_hosts = listCreate();
-               listAddNodeTail(server.admin_hosts, argv[i]);
-               printf("%s %d\n", argv[i], strlen(argv[i]));
+                listAddNodeTail(server.admin_hosts, sdsdup(argv[i]));
+                printf("%s %ld\n", argv[i], strlen(argv[i]));
             }
+            if(listSearchKey(server.admin_hosts, "127.0.0.1") != NULL)
+                printf("found 127.0.0.1\n");
+            else
+                printf("not found 127.0.0.1\n");
         }
         //===========guosong===end===
         else {
