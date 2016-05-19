@@ -261,17 +261,10 @@ void flushdbCommand(redisClient *c) {
 
 void flushallCommand(redisClient *c) {
     //=========begin=guosong====
-    char *addr = getClientPeerId(c);
-    //addr 输出结果为10.30.6.217:53401 
-    //
-    int vlen;
-    sds ip;
-    sds port;
-    sds *v = sdssplitlen(addr,strlen(addr),":",1,&vlen); 
+    char ip[REDIS_IP_STR_LEN];
+    int port;
 
-    if (vlen == 2){
-        ip = v[0];
-
+    if(anetPeerToString(c->fd, ip, sizeof(ip), &port) == 0){
         //不是本机操作
         if(listSearchKey(server.admin_hosts, ip) == NULL ){
             char msg[64];
@@ -280,7 +273,6 @@ void flushallCommand(redisClient *c) {
             return;
         }
     }
-    sdsfreesplitres(v,vlen);
     //=========end=guosong====
     signalFlushedDb(-1);
     server.dirty += emptyDb(NULL);
