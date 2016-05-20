@@ -1172,7 +1172,6 @@ void configGetCommand(redisClient *c) {
     }
     //=============begin=========guosong====
     //config get admin_hosts
-    //
     if (stringmatch(pattern, "admin_hosts", 0)){
         sds buf = sdsempty();
         listNode *ln;
