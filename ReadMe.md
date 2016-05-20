@@ -40,3 +40,20 @@ Only flushall command , other command easy to code.
 1) "admin_hosts"
 2) "127.0.0.1 10.30.6.49 10.30.6.217"
 ```
+
++ config set admin_hosts
+
+```bash
+127.0.0.1:3050> config set admin-hosts "127.0.0.1 10.30.6.49"
+OK
+127.0.0.1:3050> config set admin-hosts "127.0.0.1 10.30.6.49 10.30.6.217"
+OK
+127.0.0.1:3050> config get admin-hosts
+1) "admin-hosts"
+2) "127.0.0.1 10.30.6.49 10.30.6.217"
+127.0.0.1:3050> config set admin-hosts "127.0.0.1 10.30.6.49 10.30.6.217 127.0.0.1 10.30.6.49 10.30.6.217"
+OK
+127.0.0.1:3050> config get admin-hosts
+1) "admin-hosts"
+2) "127.0.0.1 10.30.6.49 10.30.6.217"
+```
