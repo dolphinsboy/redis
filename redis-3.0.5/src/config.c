@@ -543,18 +543,9 @@ void loadServerConfigFromString(char *config) {
         }
         //===========guosong===begin===
         else if (!strcasecmp(argv[0], "admin-hosts")){
-            printf("########################admin-hosts argc=%d\n", argc);
             int i;
-            
-            //for(i = 1; i < argc; i++){
-            for(i = 1; i < argc; i++){
+            for(i = 1; i < argc; i++)
                 listAddNodeTail(server.admin_hosts, sdsdup(argv[i]));
-                printf("%s %ld\n", argv[i], strlen(argv[i]));
-            }
-            if(listSearchKey(server.admin_hosts, "127.0.0.1") != NULL)
-                printf("found 127.0.0.1\n");
-            else
-                printf("not found 127.0.0.1\n");
         }
         //===========guosong===end===
         else {
@@ -1179,6 +1170,28 @@ void configGetCommand(redisClient *c) {
         sdsfree(buf);
         matches++;
     }
+    //=============begin=========guosong====
+    //config get admin_hosts
+    //
+    if (stringmatch(pattern, "admin_hosts", 0)){
+        sds buf = sdsempty();
+        listNode *ln;
+        listIter li;
+        
+        listRewind(server.admin_hosts,&li);
+        while((ln = listNext(&li)) != NULL){
+            buf = sdscatprintf(buf, "%s", (char*)ln->value);
+
+            if(ln->next != NULL)
+                buf = sdscatlen(buf," ",1);
+        }
+
+        addReplyBulkCString(c,"admin_hosts");
+        addReplyBulkCString(c,buf);
+        sdsfree(buf);
+        matches++;
+    }
+    //=============end=========guosong====
     if (stringmatch(pattern,"loglevel",0)) {
         char *s;
 

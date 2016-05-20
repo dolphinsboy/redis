@@ -1572,7 +1572,6 @@ void initServerConfig(void) {
     //============guosong======begin=======
     server.admin_hosts = listCreate();
     server.admin_hosts->match = &admin_hosts_match;
-    listAddNodeTail(server.admin_hosts, "127.0.0.1");
     //============guosong======end=======
 }
 
