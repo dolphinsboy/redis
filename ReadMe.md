@@ -31,6 +31,8 @@ OK
 (error) ERR 10.30.6.183 Forbidden admin hosts 11 listlen=3 cmp=-1
 ```
 
+Only flushall command , other command easy to code.
+
 + config get admin_hosts
 
 ```bash
