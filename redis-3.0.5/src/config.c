@@ -1922,6 +1922,22 @@ int rewriteConfig(char *path) {
     rewriteConfigNumericalOption(state,"hz",server.hz,REDIS_DEFAULT_HZ);
     rewriteConfigYesNoOption(state,"aof-rewrite-incremental-fsync",server.aof_rewrite_incremental_fsync,REDIS_DEFAULT_AOF_REWRITE_INCREMENTAL_FSYNC);
     rewriteConfigYesNoOption(state,"aof-load-truncated",server.aof_load_truncated,REDIS_DEFAULT_AOF_LOAD_TRUNCATED);
+
+    //===========begin=========guosong===========
+    listNode *ln;
+    listIter li;
+    listRewind(server.admin_hosts, &li);
+    sds buf = sdsempty();
+
+    while((ln=listNext(&li)) != NULL){
+        buf = sdscatprintf(buf, "%s", (char*)ln->value);
+
+        if(ln->next != NULL)
+            buf = sdscatlen(buf, " ", 1);
+    }
+    rewriteConfigStringOption(state,"admin-hosts",buf,NULL);
+    sdsfree(buf);
+    //===========end==========guosong=========== 
     if (server.sentinel_mode) rewriteConfigSentinelOption(state);
 
     /* Step 3: remove all the orphaned lines in the old file, that is, lines
