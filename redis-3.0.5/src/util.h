@@ -42,4 +42,9 @@ int d2string(char *buf, size_t len, double value);
 sds getAbsolutePath(char *filename);
 int pathIsBaseName(char *path);
 
+/* config admin_hosts match function */
+//===========begin=========guosong===========
+int admin_hosts_match(void *key1, void *key2);
+////===========end==========guosong===========   
+
 #endif

@@ -170,6 +170,15 @@ int stringmatch(const char *pattern, const char *string, int nocase) {
     return stringmatchlen(pattern,strlen(pattern),string,strlen(string),nocase);
 }
 
+//===========begin=========guosong===========
+int admin_hosts_match(void *key1, void *key2){
+    if(strcmp(key1, key2) == 0)
+        return 1;
+    else
+        return 0;
+}
+//===========end==========guosong=========== 
+
 /* Convert a string representing an amount of memory into the number of
  * bytes, so for instance memtoll("1Gb") will return 1073741824 that is
  * (1024*1024*1024).
@@ -678,8 +687,21 @@ void test_string2l(void) {
 
     strcpy(buf,"2147483648"); /* overflow */
     assert(string2l(buf,strlen(buf),&v) == 0);
+
+    asssert(admin_hosts_match("ab", "ab") == 0);
 #endif
 }
+
+//===========begin=========guosong===========
+
+int admin_hosts_match(void *key1, void*key2)
+{
+    if(strcmp(key1, key2) == 0)
+        return 1;
+    else 
+        return 0;
+}
+//===========end==========guosong===========   
 
 int main(int argc, char **argv) {
     test_string2ll();

@@ -544,8 +544,10 @@ void loadServerConfigFromString(char *config) {
         //===========guosong===begin===
         else if (!strcasecmp(argv[0], "admin-hosts")){
             int i;
-            for(i = 1; i < argc; i++)
-                listAddNodeTail(server.admin_hosts, sdsdup(argv[i]));
+            for(i = 1; i < argc; i++){
+                if(listSearchKey(server.admin_hosts, argv[i]) == NULL)
+                    listAddNodeTail(server.admin_hosts, sdsdup(argv[i]));
+            }
         }
         //===========guosong===end===
         else {
@@ -975,7 +977,27 @@ void configSetCommand(redisClient *c) {
         if (getLongLongFromObject(o,&ll) == REDIS_ERR ||
             ll < 0) goto badfmt;
         server.cluster_slave_validity_factor = ll;
-    } else {
+    } 
+    //============begin============guosong====
+    //config set admin_hosts
+    else if( !strcasecmp(c->argv[2]->ptr, "admin-hosts")){
+        int vlen, j;
+        sds *v = sdssplitlen(o->ptr, sdslen(o->ptr), " ",1, &vlen);
+        //release admin hosts list
+        listRelease(server.admin_hosts);
+        list *new_admin_hosts_list = listCreate();
+        new_admin_hosts_list->match = &admin_hosts_match;
+
+        for (j = 0; j < vlen; j++){
+            if(listSearchKey(new_admin_hosts_list, v[j]) == NULL)
+                 listAddNodeTail(new_admin_hosts_list, sdsdup(v[j]));
+        }
+
+        server.admin_hosts = new_admin_hosts_list;
+        sdsfreesplitres(v,vlen);
+    }
+    //============end============guosong====
+    else {
         addReplyErrorFormat(c,"Unsupported CONFIG parameter: %s",
             (char*)c->argv[2]->ptr);
         return;
@@ -1171,8 +1193,8 @@ void configGetCommand(redisClient *c) {
         matches++;
     }
     //=============begin=========guosong====
-    //config get admin_hosts
-    if (stringmatch(pattern, "admin_hosts", 0)){
+    //config get admin-hosts
+    if (stringmatch(pattern, "admin-hosts", 0)){
         sds buf = sdsempty();
         listNode *ln;
         listIter li;
@@ -1185,7 +1207,7 @@ void configGetCommand(redisClient *c) {
                 buf = sdscatlen(buf," ",1);
         }
 
-        addReplyBulkCString(c,"admin_hosts");
+        addReplyBulkCString(c,"admin-hosts");
         addReplyBulkCString(c,buf);
         sdsfree(buf);
         matches++;

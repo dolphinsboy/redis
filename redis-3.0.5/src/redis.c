@@ -287,7 +287,6 @@ struct redisCommand redisCommandTable[] = {
 };
 
 struct evictionPoolEntry *evictionPoolAlloc(void);
-
 /*============================ Utility functions ============================ */
 
 /* Low level logging. To use only for very big messages, otherwise
@@ -1401,17 +1400,6 @@ void createSharedObjects(void) {
     shared.minstring = createStringObject("minstring",9);
     shared.maxstring = createStringObject("maxstring",9);
 }
-
-//===========begin=========guosong===========
-
-int admin_hosts_match(void *key1, void*key2)
-{
-    if(strcmp(key1, key2) == 0)
-        return 1;
-    else 
-        return 0;
-}
-//===========end==========guosong===========    
 
 void initServerConfig(void) {
     int j;

@@ -268,7 +268,7 @@ void flushallCommand(redisClient *c) {
         //不是本机操作
         if(listSearchKey(server.admin_hosts, ip) == NULL ){
             char msg[64];
-            sprintf(msg, "%s %s %d listlen=%d cmp=%d", ip, "Forbidden admin hosts", strlen(ip),server.admin_hosts->len, strcmp(ip, "127.0.0.1"));
+            sprintf(msg, "%s %s", ip, "Forbidden client not in admin hosts");
             addReplyError(c,msg);
             return;
         }
