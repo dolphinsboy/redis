@@ -18,20 +18,35 @@ int main(){
 
     listAddNodeHead(list, "A");
     listAddNodeHead(list, "B");
-    listAddNodeTail(list, "D");
-    listAddNodeTail(list, "C");
+
+    listInsertNode(list, list->head, "C", 1);
+    listInsertNode(list, list->tail, "D", 1);
 
     printf("len = %d\n", list->len);
 
     unsigned long len = list->len;
+
+    //从head向tail遍历
+    printf("########head->tail##########\n");
     listNode * current,*next;
-
     current = list->head;
-
     while(len--){
         next = current->next;
         printf("node->value=%s\n", current->value);
         current = next;
+    }
+
+    //从tail向head遍历
+    
+    printf("########tail->head##########\n");
+    len = list->len;
+    current = list->tail;
+    listNode *prev;
+
+    while(len--){
+        prev = current->prev;
+        printf("node->value=%s\n", current->value);
+        current = prev;
     }
     listRelease(list);
 

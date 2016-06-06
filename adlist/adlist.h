@@ -55,4 +55,6 @@ void listRelease(list *list);
 list *listAddNodeHead(list *list, void *value);
 //链表尾部添加一个节点 
 list *listAddNodeTail(list *list, void *value);
+//在指定节点的位置添加新节点
+list *listInsertNode(list *list, listNode*old_node, void *value, int after);
 #endif
