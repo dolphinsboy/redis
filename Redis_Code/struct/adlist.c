@@ -41,7 +41,7 @@
 list *listCreate(void)
 {
     struct list *list;
-
+    //这里*list表示struct list,可能写成struct list更清楚一些
     if ((list = zmalloc(sizeof(*list))) == NULL)
         return NULL;
     list->head = list->tail = NULL;
@@ -68,6 +68,7 @@ void listRelease(list *list)
         zfree(current);
         current = next;
     }
+    //如果在listCreate函数malloc成list,则变成list *会导致free奔溃
     zfree(list);
 }
 
