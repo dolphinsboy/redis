@@ -51,4 +51,8 @@ typedef struct list{
 list * listCreate(void);
 //释放链表
 void listRelease(list *list);
+//链表头部添加一个节点
+list *listAddNodeHead(list *list, void *value);
+//链表尾部添加一个节点 
+list *listAddNodeTail(list *list, void *value);
 #endif
