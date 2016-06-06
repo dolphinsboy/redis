@@ -1924,6 +1924,7 @@ int rewriteConfig(char *path) {
     rewriteConfigYesNoOption(state,"aof-load-truncated",server.aof_load_truncated,REDIS_DEFAULT_AOF_LOAD_TRUNCATED);
 
     //===========begin=========guosong===========
+    //config rewrite admin-hosts
     listNode *ln;
     listIter li;
     listRewind(server.admin_hosts, &li);
