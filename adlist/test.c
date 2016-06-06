@@ -1,37 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "adlist.h"
 
-int main(int argc, char **argv)
-{
-    struct list* list;
-    listNode *node;
+int main(){
+    listNode * node = malloc(sizeof(listNode));
+    node->prev = NULL;
+    node->next = NULL;
+    node->value = "test";
 
-    list = listCreate();
+    printf("node->value=%s\n", node->value);
 
-    printf("len = %ld\n", listLength(list));
+    free(node);
 
-    list = listAddNodeHead(list, "A");
-    list = listAddNodeHead(list, "B");
-    list = listAddNodeHead(list, "C");
-    list = listAddNodeTail(list, "D");
+    list *list = listCreate();
 
-    printf("len = %ld\n", listLength(list));
-
-    /*node = list->tail;
-    while(node != NULL){
-        printf("NodeValue = %s\n", listNodeValue(node));
-
-        node = node->prev;
-    }*/
-    listIter *iter = listGetIterator(list, 0);
-    while((node = listNext(iter)) != NULL){
-        printf("NodeValue=%s\n", listNodeValue(node));
-    }
+    printf("len = %d\n", list->len);
 
     listRelease(list);
-
 
     return 0;
 }
