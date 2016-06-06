@@ -83,21 +83,27 @@ list *listInsertNode(list *list, listNode * old_node, void *value, int after){
     node->value = value;
 
     if(after){
-        
-        if(old_node->next == NULL){
-            node->prev = old_node;
-            node->next = old_node->next;
+       
+        node->prev = old_node;
+        node->next = old_node->next;
+
+        if(list->tail == old_node){
             list->tail = node;
-            old_node->next = node;
         }else{
             old_node->next->prev = node;
-            node->next = old_node->next;
-            old_node->next = node;
-            node->prev = old_node;
         }
+        old_node->next = node;
 
     }else{
+        node->next = old_node;
+        node->prev = old_node->prev;
 
+        if(list->head == old_node){
+            list->head = node;
+        }else{
+            old_node->prev->next = node;
+        }
+        old_node->prev = node;
     }
     
     list->len++;

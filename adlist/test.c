@@ -21,6 +21,8 @@ int main(){
 
     listInsertNode(list, list->head, "C", 1);
     listInsertNode(list, list->tail, "D", 1);
+    listInsertNode(list, list->head, "F", 0);
+    listInsertNode(list, list->tail, "E", 0);
 
     printf("len = %d\n", list->len);
 
