@@ -61,6 +61,23 @@ int main(){
 
     iter = listGetIterator(copy,1);
     printf("direction=%d, value=%s\n", iter->direction, iter->next->value);
+
+    current = listSearchKey(list, "F");
+
+    if(current)
+        printf("Found key %s\n", current->value);
+    else
+        printf("Not Found key\n");
+
+    current = listIndex(list,0);
+    if(current)
+        printf("First One %s\n", current->value);
+
+    current = listIndex(list,-1);
+    if(current)
+        printf("Last One %s\n", current->value);
+
+    
     listRelease(list);
 
     return 0;

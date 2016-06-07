@@ -157,7 +157,7 @@ listNode *listNext(listIter *iter){
     return current;
 }
 
-void listIterRelease(listIter *iter){
+void listReleaseIterator(listIter *iter){
     if(iter)
         free(iter);
 }
@@ -192,7 +192,7 @@ list *listDup(list *orig){
         if(copy->dup){
             value = copy->dup(node->value);
             if(value == NULL){
-                listIterRelease(iter);
+                listReleaseIterator(iter);
                 listRelease(copy);
                 return NULL;
             }
@@ -200,13 +200,57 @@ list *listDup(list *orig){
             value = node->value;
 
         if(listAddNodeTail(copy, value) == NULL){
-            listIterRelease(iter);
+            listReleaseIterator(iter);
             listRelease(copy);
             return NULL;
         }
         
     }
 
-    listIterRelease(iter);
+    listReleaseIterator(iter);
     return copy;
+}
+
+listNode *listSearchKey(list *list, void *key){
+    listNode * node;
+    listIter * iter;
+
+    iter = listGetIterator(list, AL_START_HEAD);
+
+    while((node=listNext(iter)) != NULL){
+        if(list->match){
+            if(list->match(node->value, key)){
+                listReleaseIterator(iter);
+                return node;
+            }
+        }else{
+            if(key == node->value){
+                listReleaseIterator(iter);
+                return node;
+            }
+        }
+    }
+
+    return NULL;
+}
+
+listNode *listIndex(list *list, long index){
+    //支持从head和tail双向的,index小于0从tail开始,反之从head开始
+    listNode *node;
+
+    if(index<0){
+        //负向从-1开始
+        index = (-index-1);
+        node = list->tail;
+
+        while(index--&& node)
+            node = node->prev;
+    }else{
+        //正向从0开始
+        node = list->head;
+
+        while(index--&&node)
+            node = node->next;
+    }
+    return node;
 }

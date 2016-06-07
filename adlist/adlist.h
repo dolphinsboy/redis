@@ -66,11 +66,15 @@ void listDelete(list *list, listNode *node);
 listIter *listGetIterator(list *list, int direction);
 //迭代器迭代
 listNode * listNext(listIter *iter);
-void listIterRelease(listIter *iter);
+void listReleaseIterator(listIter *iter);
 //正向迭代
 void listRewind(list *list, listIter *iter);
 //反向迭代
 void listRewindTail(list *list, listIter *iter);
 //list拷贝
 list *listDup(list *orig);
+//list 查找指定key的节点
+listNode *listSearchKey(list *list, void *key);
+//list 查找指定index的节点
+listNode *listIndex(list *list, long index);
 #endif
