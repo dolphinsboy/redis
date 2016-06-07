@@ -151,7 +151,7 @@ listNode *listNext(listIter *iter){
         if(iter->direction == AL_START_HEAD)
             iter->next = current->next;
         else
-            iter->prev = current->prev;
+            iter->next = current->prev;
         }
 
     return current;
@@ -167,7 +167,46 @@ void listRewind(list *list, listIter *iter){
     iter->direction = AL_START_HEAD;
 }
 
-void listRewind(list *list, listIter *iter){
+void listRewindTail(list *list, listIter *iter){
     iter->next = list->tail;
     iter->direction = AL_START_TAIL;
+}
+
+list *listDup(list *orig){
+    list *copy;
+    listIter *iter;
+    listNode *node;
+
+    if((copy = listCreate()) == NULL)
+        return NULL;
+
+    copy->match = orig->match;
+    copy->free = orig->free;
+    copy->dup = orig->dup;
+
+    iter = listGetIterator(orig, AL_START_HEAD);
+
+    while((node=listNext(iter)) != NULL){
+        void *value;
+
+        if(copy->dup){
+            value = copy->dup(node->value);
+            if(value == NULL){
+                listIterRelease(iter);
+                listRelease(copy);
+                return NULL;
+            }
+        }else
+            value = node->value;
+
+        if(listAddNodeTail(copy, value) == NULL){
+            listIterRelease(iter);
+            listRelease(copy);
+            return NULL;
+        }
+        
+    }
+
+    listIterRelease(iter);
+    return copy;
 }

@@ -24,7 +24,7 @@ typedef struct list{
     //链表结尾
     listNode * tail;
     //复制一个节点
-    void(*dup)(void *ptr);
+    void*(*dup)(void *ptr);
     void(*free)(void *ptr);
     //节点match函数
     int(*match)(void * ptr, void *key);
@@ -71,4 +71,6 @@ void listIterRelease(listIter *iter);
 void listRewind(list *list, listIter *iter);
 //反向迭代
 void listRewindTail(list *list, listIter *iter);
+//list拷贝
+list *listDup(list *orig);
 #endif

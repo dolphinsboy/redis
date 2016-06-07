@@ -53,10 +53,13 @@ int main(){
         current = prev;
     }
 
-    listIter * iter = listGetIterator(list,0);
+    struct list *copy;
+    copy = listDup(list);
+
+    listIter * iter = listGetIterator(copy,0);
     printf("direction=%d, value=%s\n", iter->direction, iter->next->value);
 
-    iter = listGetIterator(list,1);
+    iter = listGetIterator(copy,1);
     printf("direction=%d, value=%s\n", iter->direction, iter->next->value);
     listRelease(list);
 
