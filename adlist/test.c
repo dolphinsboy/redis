@@ -52,6 +52,12 @@ int main(){
         printf("node->value=%s\n", current->value);
         current = prev;
     }
+
+    listIter * iter = listGetIterator(list,0);
+    printf("direction=%d, value=%s\n", iter->direction, iter->next->value);
+
+    iter = listGetIterator(list,1);
+    printf("direction=%d, value=%s\n", iter->direction, iter->next->value);
     listRelease(list);
 
     return 0;

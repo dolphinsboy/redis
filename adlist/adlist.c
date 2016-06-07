@@ -125,3 +125,19 @@ void listDelete(list *list, listNode * node){
     free(node);
     list->len--;
 }
+
+listIter *listGetIterator(list *list, int direction){
+    listIter *iter;
+
+    if ((iter = malloc(sizeof(struct listIter))) == NULL)
+        return NULL;
+
+    if (direction == AL_DIRECTION_HEAD)
+        iter->next = list->head;
+    else
+        iter->next = list->tail;
+
+    iter->direction = direction;
+
+    return iter;
+}
