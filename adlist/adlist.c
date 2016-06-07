@@ -132,7 +132,7 @@ listIter *listGetIterator(list *list, int direction){
     if ((iter = malloc(sizeof(struct listIter))) == NULL)
         return NULL;
 
-    if (direction == AL_DIRECTION_HEAD)
+    if (direction == AL_START_HEAD)
         iter->next = list->head;
     else
         iter->next = list->tail;
@@ -140,4 +140,34 @@ listIter *listGetIterator(list *list, int direction){
     iter->direction = direction;
 
     return iter;
+}
+
+listNode *listNext(listIter *iter){
+    listNode * current;
+    current = iter->next;
+
+    if(current != NULL){
+        //链表非空
+        if(iter->direction == AL_START_HEAD)
+            iter->next = current->next;
+        else
+            iter->prev = current->prev;
+        }
+
+    return current;
+}
+
+void listIterRelease(listIter *iter){
+    if(iter)
+        free(iter);
+}
+
+void listRewind(list *list, listIter *iter){
+    iter->next = list->head;
+    iter->direction = AL_START_HEAD;
+}
+
+void listRewind(list *list, listIter *iter){
+    iter->next = list->tail;
+    iter->direction = AL_START_TAIL;
 }

@@ -47,8 +47,8 @@ typedef struct list{
 #define listGetFree(l) ((l)->free)
 #define listGetMatch(l) ((l)->match)
 
-#define AL_DIRECTION_HEAD 0
-#define AL_DIRECTION_TAIL 1
+#define AL_START_HEAD 0
+#define AL_START_TAIL 1
 
 //创建链表
 list * listCreate(void);
@@ -64,4 +64,11 @@ list *listInsertNode(list *list, listNode*old_node, void *value, int after);
 void listDelete(list *list, listNode *node);
 //获取链表的迭代器
 listIter *listGetIterator(list *list, int direction);
+//迭代器迭代
+listNode * listNext(listIter *iter);
+void listIterRelease(listIter *iter);
+//正向迭代
+void listRewind(list *list, listIter *iter);
+//反向迭代
+void listRewindTail(list *list, listIter *iter);
 #endif
