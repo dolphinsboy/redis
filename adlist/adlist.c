@@ -254,3 +254,22 @@ listNode *listIndex(list *list, long index){
     }
     return node;
 }
+
+void listRotate(list *list){
+    //将tail指向的节点添加到head后面
+    if(listLength(list) <= 1)
+        return;
+
+    listNode * node = list->tail;
+
+    //重新设置tail
+    list->tail = node->prev;
+    node->prev->next =  NULL;
+
+    //将节点添加到head
+    node->next = list->head;
+    list->head->prev = node;
+    list->head = node;
+    node->prev = NULL;
+
+}

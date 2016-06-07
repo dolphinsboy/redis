@@ -77,4 +77,6 @@ list *listDup(list *orig);
 listNode *listSearchKey(list *list, void *key);
 //list 查找指定index的节点
 listNode *listIndex(list *list, long index);
+//list 链表翻转每次都操作一个节点
+void listRotate(list*list);
 #endif

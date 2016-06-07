@@ -2,6 +2,21 @@
 #include <stdlib.h>
 #include "adlist.h"
 
+void printList(list *list){
+    unsigned long len = listLength(list);
+
+    //从head向tail遍历
+    printf("########head->tail##########\n");
+    listNode * current,*next;
+    current = list->head;
+    while(len--){
+        next = current->next;
+        printf("node->value=%s\n", current->value);
+        current = next;
+    }
+
+}
+
 int main(){
     listNode * node = malloc(sizeof(listNode));
     node->prev = NULL;
@@ -31,17 +46,10 @@ int main(){
     unsigned long len = list->len;
 
     //从head向tail遍历
-    printf("########head->tail##########\n");
-    listNode * current,*next;
-    current = list->head;
-    while(len--){
-        next = current->next;
-        printf("node->value=%s\n", current->value);
-        current = next;
-    }
+    printList(list);
 
     //从tail向head遍历
-    
+    listNode *current;
     printf("########tail->head##########\n");
     len = list->len;
     current = list->tail;
@@ -77,6 +85,12 @@ int main(){
     if(current)
         printf("Last One %s\n", current->value);
 
+
+    listRotate(list);
+    printList(list);
+
+    listRotate(list);
+    printList(list);
     
     listRelease(list);
 
