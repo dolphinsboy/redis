@@ -109,3 +109,19 @@ list *listInsertNode(list *list, listNode * old_node, void *value, int after){
     list->len++;
     return list;
 }
+
+void listDelete(list *list, listNode * node){
+    //通过节点的prev和next指定来区分删除的是尾部,头部还是中部 
+    if(node->prev)
+        node->prev->next = node->next;
+    else
+        list->head = node->next;
+
+    if(node->next)
+        node->next->prev = node->prev;
+    else
+        list->tail = node->prev;
+
+    free(node);
+    list->len--;
+}

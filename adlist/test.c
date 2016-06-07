@@ -24,6 +24,8 @@ int main(){
     listInsertNode(list, list->head, "F", 0);
     listInsertNode(list, list->tail, "E", 0);
 
+    listDelete(list, list->tail);
+
     printf("len = %d\n", list->len);
 
     unsigned long len = list->len;
