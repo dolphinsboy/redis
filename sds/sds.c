@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "sds.h"
@@ -22,7 +23,29 @@ sds sdsnewlen(const void*init, size_t initlen){
     return (char*)sh->buf;
 }
 
+sds sdsempty(void){
+    return sdsnewlen("",0);
+}
+
 sds sdsnew(const char * init){
     size_t initlen = (init == NULL) ? 0 : strlen(init);
     return sdsnewlen(init, initlen);
+}
+
+sds sdsdup(const sds s){
+    return sdsnewlen(s, strlen(s));
+}
+
+void sdsfree(const sds s){
+    if(s == NULL)return;
+
+    free((s-sizeof(struct sdsadr)));
+}
+
+void sdsupdatelen(sds s){
+    struct sdsadr * sh = (struct sdsadr *)(s - sizeof(struct sdsadr));
+    size_t reallen = strlen(s);
+
+    sh->len = reallen;
+    sh->free += reallen;
 }

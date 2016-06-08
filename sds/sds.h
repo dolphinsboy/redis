@@ -13,17 +13,32 @@ typedef struct sdsadr{
     char buf[];
 } sdsadr;
 
-static inline sdslen(const sds s){
+static inline size_t sdslen(const sds s){
     struct sdsadr *sh = (void*)(s-sizeof(struct sdsadr));
     return sh->len;
 }
 
-static inline sdsavail(const sds s){
+static inline size_t sdsavail(const sds s){
     struct sdsadr *sh = (void*)(s-sizeof(struct sdsadr));
     return sh->free;
 }
 
+//创建指定长度的sds
 sds sdsnewlen(const void *init, size_t initlen);
+//根据字符串创建sds
 sds sdsnew(const char *init);
+//设置sds为空串
+sds sdsempty();
+//内联函数获取sds的len
+size_t sdslen(const sds s);
+//获取sds的free
+size_t sdsavail(const sds s);
+//复制sds,根据sds的字符串重新创建一个
+sds sdsdup(const sds s);
+//free sds
+void sdsfree(const sds s);
+//更新sds的len
+void sdsupdatelen(sds s);
+
 
 #endif
