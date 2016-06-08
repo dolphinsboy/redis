@@ -5,9 +5,8 @@
 
 int main(int argc, char **argv)
 {
-    sds p = sdsnew("Helloworld");
-
-    printf("len = %zu, free = %zu\n", sdslen(p), sdsavail(p));
+    sds s = sdsnew("test");
+    printf("len = %zu\n", sdslen(s));
 
     return 0;
 }

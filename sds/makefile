@@ -1,9 +1,9 @@
-INCLUDE=/Users/guosong/Desktop/Sina/Code/redis/redis-2.6.17/test_redis_structure/sds
-LIB=/Users/guosong/Desktop/Sina/Code/redis/redis-2.6.17/test_redis_structure/sds
+sds.o:sds.c sds.h
+	gcc -g -c sds.c
 
-test:test.c
-	gcc -g -c test.c -I$(INCLUDE)
-	gcc -o test test.o -L$(LIB) -lsds
+test:test.c sds.o
+	gcc -g -c test.c
+	gcc -o test sds.o test.o 
 
 clean:
 	rm -rf *.o

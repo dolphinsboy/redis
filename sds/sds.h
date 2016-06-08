@@ -1,28 +1,29 @@
 #ifndef __SDS_H
 #define __SDS_H
 
-#define SDS_MAX_MACLLOC (1024*1024)
+#define SDS_MAX_PREALLOC (1024*1024)
+#include  <sys/types.h>
+#include <stdarg.h>
 
-#include <sys/types.h>
+typedef char *sds;
 
-typedef char* sds;
-
-struct sdshdr{
-    int len;
-    int free;
+typedef struct sdsadr{
+    unsigned int len;
+    unsigned int free;
     char buf[];
-};
+} sdsadr;
 
-
-static inline size_t sdslen(const sds s){
-    //how structure to storage in memory?
-    struct sdshdr *sh = (void*)(s-(sizeof(struct sdshdr)));
+static inline sdslen(const sds s){
+    struct sdsadr *sh = (void*)(s-sizeof(struct sdsadr));
     return sh->len;
 }
 
-static inline size_t sdsavail(const sds s){
-    struct sdshdr *sh = (void*)(s-(sizeof(struct sdshdr)));
+static inline sdsavail(const sds s){
+    struct sdsadr *sh = (void*)(s-sizeof(struct sdsadr));
     return sh->free;
 }
-sds sdsnew(const char* init);
+
+sds sdsnewlen(const void *init, size_t initlen);
+sds sdsnew(const char *init);
+
 #endif
