@@ -71,13 +71,14 @@ sds sdsMakeRoomFor(sds s, size_t addlen){
     if(addlen < free) return s;
     
     newlen = len + addlen;
-
+    //预分配
     if(newlen < SDS_MAX_PREALLOC)
         newlen *= 2;
     else
         newlen += SDS_MAX_PREALLOC;
 
     struct sdsadr *newsh;
+    //扩展内存
     newsh = realloc(sh, newlen);
 
     if(newsh == NULL)return NULL;
