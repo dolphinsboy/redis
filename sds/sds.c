@@ -109,6 +109,8 @@ size_t sdsAllocSize(sds s){
 }
 
 void sdsIncrLen(sds s, int incr){
+    //添加sdsIncr的函数操作,其在现有内存空间中进行操作,不涉及内存的分配
+    //故有别与sdsMakeRoomFor
     struct sdsadr *sh;
     sh = (struct sdsadr*)(s - sizeof(struct sdsadr));
 
