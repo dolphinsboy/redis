@@ -127,3 +127,22 @@ void sdsIncrLen(sds s, int incr){
 
     s[sh->len] = '\0';
 }
+
+sds sdsgrowzero(sds s, size_t len){
+    struct sdsadr *sh = (void*)(s-sizeof(struct sdsadr));
+    size_t curlen = sh->len;
+    size_t totallen;
+
+    if(len <= curlen) return s;
+    s = sdsMakeRoomFor(s, len-curlen);
+    if(s == NULL) return NULL;
+
+    sh = (void*)(s-sizeof(struct sdsadr));
+    memset(sh->buf, 0 ,sh->len);
+
+    totallen = sh->len + sh->free;
+    sh->len = len;
+    sh->free = totallen - sh->len;
+
+    return s;
+}

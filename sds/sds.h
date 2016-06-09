@@ -47,7 +47,9 @@ sds sdsMakeRoomFor(sds s, size_t addlen);
 sds sdsRemoveFreeSpace(sds s);
 //返回sds所有分配的所有空间大小
 size_t sdsAllocSize(sds s);
-
+//在现有内存空间中进行操作,不涉及内存的分配
 void sdsIncrLen(sds s, int incr);
+//将sds的buf设置为空,且增加len的空间
+sds sdsgrowzero(sds s, size_t len);
 
 #endif
