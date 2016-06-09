@@ -36,8 +36,12 @@ int main(int argc, char **argv){
     sdsIncrLen(s, -2);
     printf("after incr -2 len buf = %s, len = %zu, free = %zu\n", s, sdslen(s), sdsavail(s));
     printFlag();
-    sdsgrowzero(s, 10);
-    printf("after grow zero buf = %s, len = %zu, free = %zu\n", s, sdslen(s), sdsavail(s));
+    //sdsgrowzero(s, 10);
+    //printf("after grow zero buf = %s, len = %zu, free = %zu\n", s, sdslen(s), sdsavail(s));
+
+    char * ss = "Helloword";
+    s = sdscatlen(s, ss, strlen(ss));
+    printf("after sdscatlen buf = %s, len = %zu, free = %zu\n", s, sdslen(s), sdsavail(s));
     
     printFlag();
     s = sdsRemoveFreeSpace(s);

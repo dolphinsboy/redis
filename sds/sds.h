@@ -51,5 +51,7 @@ size_t sdsAllocSize(sds s);
 void sdsIncrLen(sds s, int incr);
 //将sds的buf设置为空,且增加len的空间
 sds sdsgrowzero(sds s, size_t len);
+//在现有的buf上追加len长度的字符串t
+sds sdscatlen(sds s, const void*t, size_t len);
 
 #endif

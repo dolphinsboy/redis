@@ -146,3 +146,20 @@ sds sdsgrowzero(sds s, size_t len){
 
     return s;
 }
+
+sds sdscatlen(sds s, const void *t, size_t len){
+    struct sdsadr *sh;
+    size_t currlen = sdslen(s);
+
+    s = sdsMakeRoomFor(s,len);
+    if(s == NULL) return NULL;
+
+    sh = (void*)(s-sizeof(*sh));
+    memcpy(s+currlen, t, len);
+    sh->len = currlen + len;
+    sh->free -= len;
+
+    sh->buf[sh->len]='\0';
+
+    return s;
+}
