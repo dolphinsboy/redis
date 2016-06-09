@@ -49,3 +49,40 @@ void sdsupdatelen(sds s){
     sh->len = reallen;
     sh->free += reallen;
 }
+
+void sdsclear(sds s){
+    struct sdsadr *sh = (struct sdsadr *)(s - sizeof(struct sdsadr));
+    size_t reallen = 0;
+    sh->free += sh->len;
+    sh->len = 0;
+
+    sh->buf[0]='\0';
+}
+
+sds sdsMakeRoomFor(sds s, size_t addlen){
+    struct sdsadr *sh;
+    size_t len, newlen;
+    size_t free = sdsavail(s);
+
+    sh = (struct sdsadr*)(s-sizeof(struct sdsadr));
+
+    len = sh->len;
+
+    if(addlen < free) return s;
+    
+    newlen = len + addlen;
+
+    if(newlen < SDS_MAX_PREALLOC)
+        newlen *= 2;
+    else
+        newlen += SDS_MAX_PREALLOC;
+
+    struct sdsadr *newsh;
+    newsh = realloc(sh, newlen);
+
+    if(newsh == NULL)return NULL;
+
+    newsh->free = (newlen-len);
+
+    return newsh->buf;
+}

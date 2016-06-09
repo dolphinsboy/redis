@@ -37,8 +37,11 @@ size_t sdsavail(const sds s);
 sds sdsdup(const sds s);
 //free sds
 void sdsfree(const sds s);
-//更新sds的len
+//更新sds为其实际的长度
 void sdsupdatelen(sds s);
-
+//清空sds
+void sdsclear(sds s);
+//增加sds的可用空间
+sds sdsMakeRoomFor(sds s, size_t addlen);
 
 #endif

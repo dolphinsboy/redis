@@ -18,6 +18,13 @@ int main(int argc, char **argv){
     sdsupdatelen(u);
     printf("len after update = %zu\n", sdslen(u));
 
+    sdsclear(u);
+
+    printf("after clear len = %zu, free = %zu\n", sdslen(u), sdsavail(u));
+
+    s = sdsMakeRoomFor(s, 1024);
+    printf("after make room buf = %s, len = %zu, free = %zu\n", s, sdslen(s), sdsavail(s));
+
     sdsfree(copy);
     sdsfree(s);
     sdsfree(e);
