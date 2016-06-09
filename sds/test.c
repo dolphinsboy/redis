@@ -42,6 +42,8 @@ int main(int argc, char **argv){
     char * ss = "Helloword";
     s = sdscatlen(s, ss, strlen(ss));
     printf("after sdscatlen buf = %s, len = %zu, free = %zu\n", s, sdslen(s), sdsavail(s));
+    sdscat(s, copy);
+    printf("after sdscat buf = %s, len = %zu, free = %zu\n", s, sdslen(s), sdsavail(s));
     
     printFlag();
     s = sdsRemoveFreeSpace(s);

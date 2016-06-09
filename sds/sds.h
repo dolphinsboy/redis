@@ -53,5 +53,7 @@ void sdsIncrLen(sds s, int incr);
 sds sdsgrowzero(sds s, size_t len);
 //在现有的buf上追加len长度的字符串t
 sds sdscatlen(sds s, const void*t, size_t len);
+//在现有的buf上追加另一个sds t
+sds sdscat(sds s, const sds t);
 
 #endif
