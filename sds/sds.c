@@ -99,3 +99,10 @@ sds sdsRemoveFreeSpace(sds s){
 
     return sh->buf;
 }
+
+size_t sdsAllocSize(sds s){
+    struct sdsadr *sh;
+    sh = (struct sdsadr*)(s - sizeof(struct sdsadr));
+
+    return sizeof(*sh)+sh->len+sh->free+1;
+}

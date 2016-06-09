@@ -24,7 +24,7 @@ int main(int argc, char **argv){
 
     s = sdsMakeRoomFor(s, 1024);
     printf("after make room buf = %s, len = %zu, free = %zu\n", s, sdslen(s), sdsavail(s));
-
+    printf("sdsAllocSize=%zu\n", sdsAllocSize(s));
     s = sdsRemoveFreeSpace(s);
     printf("after remove space buf = %s, len = %zu, free = %zu\n", s, sdslen(s), sdsavail(s));
 

@@ -45,5 +45,7 @@ void sdsclear(sds s);
 sds sdsMakeRoomFor(sds s, size_t addlen);
 //清理free space
 sds sdsRemoveFreeSpace(sds s);
+//返回sds所有分配的所有空间大小
+size_t sdsAllocSize(sds s);
 
 #endif
