@@ -20,7 +20,7 @@ int main(int argc, char **argv){
     printf("len before update = %zu\n", sdslen(u));
     u[5]='\0';
     sdsupdatelen(u);
-    printf("len after update = %zu\n", sdslen(u));
+    printf("sds u en after update = %zu\n", sdslen(u));
 
     sdsclear(u);
 
@@ -44,10 +44,19 @@ int main(int argc, char **argv){
     printf("after sdscatlen buf = %s, len = %zu, free = %zu\n", s, sdslen(s), sdsavail(s));
     sdscat(s, copy);
     printf("after sdscat buf = %s, len = %zu, free = %zu\n", s, sdslen(s), sdsavail(s));
+
+    u = sdscpylen(u, "FDDXEXDDGSDFGSEWREEE", 20);
+    printf("after sdscpy buf = %s, len = %zu, free = %zu\n", u, sdslen(u), sdsavail(u));
+    u = sdscpy(u, "DDDDDDDDDDDDDDDDDDDDDDDDDEEEEEEEEEEEEEEEEEEEEEEFFFFFFFFFFFFF");
+    printf("after sdscpy buf = %s, len = %zu, free = %zu\n", u, sdslen(u), sdsavail(u));
     
     printFlag();
     s = sdsRemoveFreeSpace(s);
     printf("after remove space buf = %s, len = %zu, free = %zu\n", s, sdslen(s), sdsavail(s));
+
+    char buf[21];
+    sdsll2str(buf, -10);
+    printf("sdsll2str = %s\n", buf);
     
     sdsfree(copy);
     sdsfree(s);

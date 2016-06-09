@@ -56,7 +56,6 @@ void sdsclear(sds s){
     size_t reallen = 0;
     sh->free += sh->len;
     sh->len = 0;
-
     sh->buf[0]='\0';
 }
 
@@ -166,4 +165,59 @@ sds sdscatlen(sds s, const void *t, size_t len){
 
 sds sdscat(sds s, const sds t){
     return sdscatlen(s, t, sdslen(t));
+}
+
+sds sdscpylen(sds s, const void *t, size_t len){
+    struct sdsadr *sh = (void*)(s-sizeof(struct sdsadr));
+    size_t totallen = sh->free+sh->len;
+
+    if(totallen<len){
+        s = sdsMakeRoomFor(s, len);
+        sh = (void*)(s-sizeof(struct sdsadr));
+        if(sh == NULL)
+            return NULL;
+        totallen = sh->free+sh->len;
+    }
+
+    memcpy(s, t, len);
+    s[len]='\0';
+    sh->len = len;
+    sh->free = totallen - len;
+
+    return s;
+}
+
+sds sdscpy(sds s , const void *t){
+    return sdscpylen(s, t, strlen(t));
+}
+
+int sdsll2str(char *s, long long value){
+    char *p, aux;
+    unsigned long long v;
+    size_t l;
+    //按10取模将单个数字保存到buf中 
+    v = (value < 0) ? -value : value;
+    p = s;
+    do{
+        *p++ = '0' + v%10;
+        v /= 10;
+    }while(v);
+
+    if(value<0)
+        *p++ = '-';
+    *p = '\0';
+
+    l = p-s;
+
+    //翻转字符串
+    p--;
+    while(s<p){
+        aux = *s;
+        *s = *p;
+        *p = aux;
+        s++;
+        p--;
+    }
+
+    return l;
 }

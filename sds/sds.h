@@ -55,5 +55,11 @@ sds sdsgrowzero(sds s, size_t len);
 sds sdscatlen(sds s, const void*t, size_t len);
 //在现有的buf上追加另一个sds t
 sds sdscat(sds s, const sds t);
+//将字符串t的前len个字符拷贝到sds s中
+sds sdscpylen(sds s, const void*t , size_t len);
+//将整个字符串t都拷贝到sds s中
+sds sdscpy(sds s, const void*t);
+//将整数保存在缓存s中,结果返回整数的位数
+int sdsll2str(char *s, long long value);
 
 #endif
