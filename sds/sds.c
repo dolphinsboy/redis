@@ -209,7 +209,7 @@ int sdsll2str(char *s, long long value){
 
     l = p-s;
 
-    //翻转字符串
+    //翻转字符串,需要排除结尾的\0
     p--;
     while(s<p){
         aux = *s;
