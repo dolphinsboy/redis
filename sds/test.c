@@ -57,6 +57,9 @@ int main(int argc, char **argv){
     char buf[21];
     sdsll2str(buf, -10);
     printf("sdsll2str = %s\n", buf);
+
+    sdsull2str(buf,1338997);
+    printf("sdsull2str = %s\n",buf);
     
     sdsfree(copy);
     sdsfree(s);

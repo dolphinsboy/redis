@@ -221,3 +221,32 @@ int sdsll2str(char *s, long long value){
 
     return l;
 }
+
+int sdsull2str(char *s, unsigned long long value){
+    char *p, aux;
+    size_t l;
+    p = s;
+    //获取各位数字保存到s中
+    do{
+        *p++ = '0' + value%10;
+        value /= 10;
+    }while(value);
+
+    l = p-s;
+    *p = '\0';
+
+    //翻转字符串
+    p--;
+
+    while(s<p){
+        aux = *s;
+        *s = *p;
+        *p = aux;
+
+        s++;
+        p--;
+    }
+
+    return l;
+}
+
