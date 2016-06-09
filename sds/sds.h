@@ -48,4 +48,6 @@ sds sdsRemoveFreeSpace(sds s);
 //返回sds所有分配的所有空间大小
 size_t sdsAllocSize(sds s);
 
+void sdsIncrLen(sds s, int incr);
+
 #endif

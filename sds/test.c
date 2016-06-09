@@ -3,6 +3,10 @@
 #include <string.h>
 #include "sds.h"
 
+void printFlag(){
+    printf("#######################\n\n");
+}
+
 int main(int argc, char **argv){
     sds s = sdsnew("test");
     sds e = sdsempty();
@@ -21,13 +25,21 @@ int main(int argc, char **argv){
     sdsclear(u);
 
     printf("after clear len = %zu, free = %zu\n", sdslen(u), sdsavail(u));
-
+    
     s = sdsMakeRoomFor(s, 1024);
     printf("after make room buf = %s, len = %zu, free = %zu\n", s, sdslen(s), sdsavail(s));
     printf("sdsAllocSize=%zu\n", sdsAllocSize(s));
+    
+    //printFlag();
+    //sdsIncrLen(s, 10);
+    //printf("after incr 10 len buf = %s, len = %zu, free = %zu\n", s, sdslen(s), sdsavail(s));
+    sdsIncrLen(s, -2);
+    printf("after incr -2 len buf = %s, len = %zu, free = %zu\n", s, sdslen(s), sdsavail(s));
+    
+    printFlag();
     s = sdsRemoveFreeSpace(s);
     printf("after remove space buf = %s, len = %zu, free = %zu\n", s, sdslen(s), sdsavail(s));
-
+    
     sdsfree(copy);
     sdsfree(s);
     sdsfree(e);

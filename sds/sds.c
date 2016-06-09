@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #include "sds.h"
 
 sds sdsnewlen(const void*init, size_t initlen){
@@ -105,4 +106,22 @@ size_t sdsAllocSize(sds s){
     sh = (struct sdsadr*)(s - sizeof(struct sdsadr));
 
     return sizeof(*sh)+sh->len+sh->free+1;
+}
+
+void sdsIncrLen(sds s, int incr){
+    struct sdsadr *sh;
+    sh = (struct sdsadr*)(s - sizeof(struct sdsadr));
+
+    if(incr>=0){
+        //增长的空间小于free,可以无需添加即可
+        assert(sh->free >= (unsigned int)incr);
+    }else{
+        //现有的len如果大于incr的长度,才可以操作
+        assert(sh->len >= (unsigned int)(-incr));
+    }
+
+    sh->len += incr;
+    sh->free -= incr;
+
+    s[sh->len] = '\0';
 }
