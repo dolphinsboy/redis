@@ -87,3 +87,15 @@ sds sdsMakeRoomFor(sds s, size_t addlen){
 
     return newsh->buf;
 }
+
+sds sdsRemoveFreeSpace(sds s){
+    struct sdsadr *sh;
+    size_t len;
+    sh = (struct sdsadr*)(s - sizeof(struct sdsadr));
+
+    len = sh->len;
+    sh = realloc(sh, sizeof(struct sdsadr)+len+1);
+    sh->free = 0;
+
+    return sh->buf;
+}

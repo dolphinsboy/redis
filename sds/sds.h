@@ -43,5 +43,7 @@ void sdsupdatelen(sds s);
 void sdsclear(sds s);
 //增加sds的可用空间
 sds sdsMakeRoomFor(sds s, size_t addlen);
+//清理free space
+sds sdsRemoveFreeSpace(sds s);
 
 #endif
