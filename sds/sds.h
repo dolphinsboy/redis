@@ -63,5 +63,11 @@ sds sdscpy(sds s, const void*t);
 int sdsll2str(char *s, long long value);
 //将无符号整数保存在缓存s中,结果返回整数的位数
 int sdsull2str(char *s, unsigned long long value);
+//将整数转换为sds对象
+sds sdsfromlonglong(long long value);
+//由参数format格式化的字符串追加到sds s中
+sds sdsvprintf(sds s, const char *fmt, va_list ap);
+//将变量参数格式到sds中
+sds sdscatprintf(sds s, const char *fmt, ...);
 
 #endif

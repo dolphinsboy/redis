@@ -60,7 +60,13 @@ int main(int argc, char **argv){
 
     sdsull2str(buf,1338997);
     printf("sdsull2str = %s\n",buf);
-    
+
+    s = sdsfromlonglong(5349973883);
+    printf("after fromlonglong buf = %s, len = %zu, free = %zu\n", s, sdslen(s), sdsavail(s));
+
+    s = sdscatprintf(s, "%s %d %c", "sdscatprintf", 22233, 'A');
+    printf("after sdscatprintf buf = %s, len = %zu, free = %zu\n", s, sdslen(s), sdsavail(s));
+
     sdsfree(copy);
     sdsfree(s);
     sdsfree(e);
