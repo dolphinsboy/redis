@@ -64,7 +64,7 @@ int main(int argc, char **argv){
     s = sdsfromlonglong(5349973883);
     printf("after fromlonglong buf = %s, len = %zu, free = %zu\n", s, sdslen(s), sdsavail(s));
 
-    s = sdscatprintf(s, "%s %d %c", "sdscatprintf", 22233, 'A');
+    s = sdscatprintf(sdsempty(), "%s %d %c", "sdscatprintf", 22233, 'A');
     printf("after sdscatprintf buf = %s, len = %zu, free = %zu\n", s, sdslen(s), sdsavail(s));
 
     sdsfree(copy);
