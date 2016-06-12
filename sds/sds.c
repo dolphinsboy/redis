@@ -264,6 +264,7 @@ sds sdsvprintf(sds s, const char *fmt, va_list ap){
    char staticbuf[1024], *buf=staticbuf, *t;
    size_t buflen = strlen(fmt)*2;
 
+   //预分配
    if(buflen >= sizeof(staticbuf)){
         buf = malloc(buflen);
         if(buf==NULL) return NULL;
@@ -272,12 +273,13 @@ sds sdsvprintf(sds s, const char *fmt, va_list ap){
    }
 
    while(1){
-        buf[buflen-2] = '\0';
+       //只是起到标记作用,如果超过设置1024,重新分配内存
+        buf[buflen-3] = '\0';
         va_copy(cpy, ap);
         vsnprintf(buf, buflen, fmt, cpy);
         va_end(cpy);
 
-        if(buf[buflen-2]!='\0'){
+        if(buf[buflen-3]!='\0'){
             if(buf != staticbuf) free(buf);
             buflen *= 2;
             buf = malloc(buflen);
