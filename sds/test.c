@@ -70,14 +70,19 @@ int main(int argc, char **argv){
     s = sdscatfmt(sdsempty(), "%s %S %i %I %u %U","AAA", u, -222, -3333, 222,111111222555111);
     printf("after sdscatfmt buf = %s, len = %zu, free = %zu\n", s, sdslen(s), sdsavail(s));
 
-    sds t = sdsnew(" ddx ddd . ");
-    t = sdstrim(t, " .");
+    sds t = sdsnew(" ddx . ddd . . . .                                   .");
+    t = sdstrim(t, " . d ");
     printf("after sdstrim buf =%s, len = %zu, free = %zu\n", t, sdslen(t), sdsavail(t));
+
+    sds r = sdsnew("Hello World"); 
+    sdsrange(r, 100, 200);
+    printf("after sdsrange buf =%s, len = %zu, free = %zu\n", r, sdslen(r), sdsavail(r));
 
     sdsfree(copy);
     sdsfree(s);
     sdsfree(t);
     sdsfree(e);
+    sdsfree(r);
 
     return 0;
 }

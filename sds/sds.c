@@ -425,3 +425,46 @@ sds sdstrim(sds s, const char *cset){
 
    return s;
 }
+
+void sdsrange(sds s, int start, int end){
+    //start 从0开始,end从-1开始或者len-1开始
+    //start和end均在[-len+1, len-1]之间
+    struct sdshdr *sh = (void*)(s - sizeof(struct sdshdr));
+    size_t newlen, len = sdslen(s);
+
+    if(len==0)return;
+
+    if(start<0){
+        start = start + len;
+        if(start < 0) start = 0;
+    }
+
+    if(end<0){
+        end = end + len;
+        if(end<0) end = 0;
+    }
+
+    newlen = (start > end) ? 0 : ((end-start)+1);
+    //下面这段作用是防止start和end越界
+    //例如:
+    //sds r = sdsnew("Hello World")
+    //sdsrange(r, 100, 200)
+    //这种条件下,newlen=100,start<end
+    //如果直接memmove话,会出现内存越界
+    //再次检查start和end是否越界
+    if(newlen != 0){
+        if(start >= (signed)len)
+            newlen = 0;
+        else if(end >= (signed)len){
+            end = len - 1;
+            newlen = (start > end) ? 0 : ((end-start)+1);
+        }
+    }else{
+        start = 0;
+    }
+
+    if(newlen)memmove(sh->buf, sh->buf+start, newlen);
+    sh->buf[newlen]='\0';
+    sh->len = newlen;
+    sh->free = sh->free-newlen+len;
+}

@@ -73,5 +73,7 @@ sds sdscatprintf(sds s, const char *fmt, ...);
 sds sdscatfmt(sds s, const char*fmt,...);
 //删除sds两头的所有在cset中的字符
 sds sdstrim(sds s, const char *cset);
+//按照范围获取start和end之间的字符串,支持负整数
+void sdsrange(sds s, int start, int end);
 
 #endif
