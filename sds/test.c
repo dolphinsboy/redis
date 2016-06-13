@@ -67,7 +67,7 @@ int main(int argc, char **argv){
     s = sdscatprintf(sdsempty(), "%s %d %c", "sdscatprintf", 22233, 'A');
     printf("after sdscatprintf buf = %s, len = %zu, free = %zu\n", s, sdslen(s), sdsavail(s));
 
-    s = sdscatfmt(sdsempty(), "%U",111);
+    s = sdscatfmt(sdsempty(), "%s %S %i %I %u %U","AAA", u, -222, -3333, 222,111111222555111);
     printf("after sdscatfmt buf = %s, len = %zu, free = %zu\n", s, sdslen(s), sdsavail(s));
 
     sdsfree(copy);
