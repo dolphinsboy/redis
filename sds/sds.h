@@ -7,19 +7,19 @@
 
 typedef char *sds;
 
-typedef struct sdsadr{
+typedef struct sdshdr{
     unsigned int len;
     unsigned int free;
     char buf[];
-} sdsadr;
+} sdshdr;
 
 static inline size_t sdslen(const sds s){
-    struct sdsadr *sh = (void*)(s-sizeof(struct sdsadr));
+    struct sdshdr *sh = (void*)(s-sizeof(struct sdshdr));
     return sh->len;
 }
 
 static inline size_t sdsavail(const sds s){
-    struct sdsadr *sh = (void*)(s-sizeof(struct sdsadr));
+    struct sdshdr *sh = (void*)(s-sizeof(struct sdshdr));
     return sh->free;
 }
 
@@ -69,5 +69,7 @@ sds sdsfromlonglong(long long value);
 sds sdsvprintf(sds s, const char *fmt, va_list ap);
 //将变量参数格式到sds中
 sds sdscatprintf(sds s, const char *fmt, ...);
+//不使用sprintf的格式字符串
+sds sdscatfmt(sds s, const char*fmt,...);
 
 #endif

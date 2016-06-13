@@ -58,7 +58,7 @@ int main(int argc, char **argv){
     sdsll2str(buf, -10);
     printf("sdsll2str = %s\n", buf);
 
-    sdsull2str(buf,1338997);
+    sdsull2str(buf,111);
     printf("sdsull2str = %s\n",buf);
 
     s = sdsfromlonglong(5349973883);
@@ -66,6 +66,9 @@ int main(int argc, char **argv){
 
     s = sdscatprintf(sdsempty(), "%s %d %c", "sdscatprintf", 22233, 'A');
     printf("after sdscatprintf buf = %s, len = %zu, free = %zu\n", s, sdslen(s), sdsavail(s));
+
+    s = sdscatfmt(sdsempty(), "%U",111);
+    printf("after sdscatfmt buf = %s, len = %zu, free = %zu\n", s, sdslen(s), sdsavail(s));
 
     sdsfree(copy);
     sdsfree(s);

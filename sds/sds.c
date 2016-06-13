@@ -5,9 +5,9 @@
 #include "sds.h"
 
 sds sdsnewlen(const void*init, size_t initlen){
-    struct sdsadr *sh;
+    struct sdshdr *sh;
 
-    //init为空,也生成对应的sdsadr对象
+    //init为空,也生成对应的sdshdr对象
     if(init)
         sh = malloc(sizeof(*sh)+initlen+1);
     else
@@ -40,11 +40,11 @@ sds sdsdup(const sds s){
 void sdsfree(const sds s){
     if(s == NULL)return;
 
-    free((s-sizeof(struct sdsadr)));
+    free((s-sizeof(struct sdshdr)));
 }
 
 void sdsupdatelen(sds s){
-    struct sdsadr * sh = (struct sdsadr *)(s - sizeof(struct sdsadr));
+    struct sdshdr * sh = (struct sdshdr *)(s - sizeof(struct sdshdr));
     size_t reallen = strlen(s);
 
     sh->len = reallen;
@@ -52,7 +52,7 @@ void sdsupdatelen(sds s){
 }
 
 void sdsclear(sds s){
-    struct sdsadr *sh = (struct sdsadr *)(s - sizeof(struct sdsadr));
+    struct sdshdr *sh = (struct sdshdr *)(s - sizeof(struct sdshdr));
     size_t reallen = 0;
     sh->free += sh->len;
     sh->len = 0;
@@ -60,11 +60,11 @@ void sdsclear(sds s){
 }
 
 sds sdsMakeRoomFor(sds s, size_t addlen){
-    struct sdsadr *sh;
+    struct sdshdr *sh;
     size_t len, newlen;
     size_t free = sdsavail(s);
 
-    sh = (struct sdsadr*)(s-sizeof(struct sdsadr));
+    sh = (struct sdshdr*)(s-sizeof(struct sdshdr));
 
     len = sh->len;
 
@@ -77,7 +77,7 @@ sds sdsMakeRoomFor(sds s, size_t addlen){
     else
         newlen += SDS_MAX_PREALLOC;
 
-    struct sdsadr *newsh;
+    struct sdshdr *newsh;
     //扩展内存
     newsh = realloc(sh, newlen);
 
@@ -89,20 +89,20 @@ sds sdsMakeRoomFor(sds s, size_t addlen){
 }
 
 sds sdsRemoveFreeSpace(sds s){
-    struct sdsadr *sh;
+    struct sdshdr *sh;
     size_t len;
-    sh = (struct sdsadr*)(s - sizeof(struct sdsadr));
+    sh = (struct sdshdr*)(s - sizeof(struct sdshdr));
 
     len = sh->len;
-    sh = realloc(sh, sizeof(struct sdsadr)+len+1);
+    sh = realloc(sh, sizeof(struct sdshdr)+len+1);
     sh->free = 0;
 
     return sh->buf;
 }
 
 size_t sdsAllocSize(sds s){
-    struct sdsadr *sh;
-    sh = (struct sdsadr*)(s - sizeof(struct sdsadr));
+    struct sdshdr *sh;
+    sh = (struct sdshdr*)(s - sizeof(struct sdshdr));
 
     return sizeof(*sh)+sh->len+sh->free+1;
 }
@@ -110,8 +110,8 @@ size_t sdsAllocSize(sds s){
 void sdsIncrLen(sds s, int incr){
     //添加sdsIncr的函数操作,其在现有内存空间中进行操作,不涉及内存的分配
     //故有别与sdsMakeRoomFor
-    struct sdsadr *sh;
-    sh = (struct sdsadr*)(s - sizeof(struct sdsadr));
+    struct sdshdr *sh;
+    sh = (struct sdshdr*)(s - sizeof(struct sdshdr));
 
     if(incr>=0){
         //增长的空间小于free,可以无需添加即可
@@ -128,7 +128,7 @@ void sdsIncrLen(sds s, int incr){
 }
 
 sds sdsgrowzero(sds s, size_t len){
-    struct sdsadr *sh = (void*)(s-sizeof(struct sdsadr));
+    struct sdshdr *sh = (void*)(s-sizeof(struct sdshdr));
     size_t curlen = sh->len;
     size_t totallen;
 
@@ -136,7 +136,7 @@ sds sdsgrowzero(sds s, size_t len){
     s = sdsMakeRoomFor(s, len-curlen);
     if(s == NULL) return NULL;
 
-    sh = (void*)(s-sizeof(struct sdsadr));
+    sh = (void*)(s-sizeof(struct sdshdr));
     memset(sh->buf, 0 ,sh->len);
 
     totallen = sh->len + sh->free;
@@ -147,7 +147,7 @@ sds sdsgrowzero(sds s, size_t len){
 }
 
 sds sdscatlen(sds s, const void *t, size_t len){
-    struct sdsadr *sh;
+    struct sdshdr *sh;
     size_t currlen = sdslen(s);
 
     s = sdsMakeRoomFor(s,len);
@@ -168,12 +168,12 @@ sds sdscat(sds s, const sds t){
 }
 
 sds sdscpylen(sds s, const void *t, size_t len){
-    struct sdsadr *sh = (void*)(s-sizeof(struct sdsadr));
+    struct sdshdr *sh = (void*)(s-sizeof(struct sdshdr));
     size_t totallen = sh->free+sh->len;
 
     if(totallen<len){
         s = sdsMakeRoomFor(s, len);
-        sh = (void*)(s-sizeof(struct sdsadr));
+        sh = (void*)(s-sizeof(struct sdshdr));
         if(sh == NULL)
             return NULL;
         totallen = sh->free+sh->len;
@@ -305,3 +305,102 @@ sds sdscatprintf(sds s, const char *fmt, ...){
 
     return t;
 }
+
+sds sdscatfmt(sds s, const char*fmt, ...){
+   struct sdshdr*sh = (void *)(s - sizeof(struct sdshdr));
+   size_t initlen = sdslen(s);
+
+   va_list ap;
+   const char *f = fmt;
+   int i;
+
+   va_start(ap, fmt);
+   i = initlen;
+
+   while(*f){
+       char next, *str;
+       unsigned int l;
+       long long num;
+       unsigned long long unum;
+
+       if(sh->free == 0){
+            s = sdsMakeRoomFor(s,1);
+            sh = (void *)(s - sizeof(struct sdshdr));}
+
+       switch(*f){
+        case '%':
+            next=*(f+1);
+            f++;
+            switch(next){
+                case 's':
+                case 'S':
+                    str = va_arg(ap, char *);
+                    l = (next == 's') ? strlen(str) : sdslen(str);
+                    if(sh->free < l){
+                        s = sdsMakeRoomFor(s, l);
+                        sh = (void *)(s - sizeof(struct sdshdr));
+                    }
+                    memcpy(s+i, str, l);
+                    sh->len += l;
+                    sh->free -=l;
+                    i += l;
+                    break;
+                case 'i':
+                case 'I':
+                    if(next == 'i')
+                        num = va_arg(ap, int);
+                    else
+                        num = va_arg(ap, long long);
+                    {
+                        char buf[SDS_LLSTR_SIZE];
+                        l = sdsll2str(buf, num);
+                        if(sh->free < l){
+                            s = sdsMakeRoomFor(s, l);
+                            sh = (void *)(s - sizeof(struct sdshdr));
+                        }
+
+                        memcpy(s+i, buf, l);
+                        sh->len += l;
+                        sh->free -= l;
+                        i += l;
+                    }
+                    break;
+                case 'u':
+                case 'U':
+                    if (next == 'u')
+                        unum = va_arg(ap, unsigned int);
+                    else
+                        unum = va_arg(ap, unsigned long long);
+                    {
+                        char buf[SDS_LLSTR_SIZE];
+                        l = sdsull2str(buf, unum);
+                        if(sh->free < l){
+                            s = sdsMakeRoomFor(s, l);
+                            sh = (void *)(s - sizeof(struct sdshdr));
+                        }
+                        memcpy(s+i, buf, l);
+                        sh->len += l;
+                        sh->free -= l;
+                        i += l;
+                    }
+                    break;
+                default:
+                    s[i++] = next;
+                    sh->len +=1;
+                    sh->free -=1;
+                    break;
+            }
+        break;
+        default:
+            s[i++] = *f;
+            sh->len +=1;
+            sh->free -=1;
+            break;
+       }
+       f++;
+   }
+   va_end(ap);
+   s[i++] = '\0';
+   return s;
+}
+
