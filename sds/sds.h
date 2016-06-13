@@ -71,5 +71,7 @@ sds sdsvprintf(sds s, const char *fmt, va_list ap);
 sds sdscatprintf(sds s, const char *fmt, ...);
 //不使用sprintf的格式字符串
 sds sdscatfmt(sds s, const char*fmt,...);
+//删除sds两头的所有在cset中的字符
+sds sdstrim(sds s, const char *cset);
 
 #endif

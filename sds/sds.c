@@ -404,3 +404,24 @@ sds sdscatfmt(sds s, const char*fmt, ...){
    return s;
 }
 
+sds sdstrim(sds s, const char *cset){
+   struct sdshdr *sh = (void *)(s-sizeof(struct sdshdr));
+   char *start, *end;
+   char *sp, *ep;
+   size_t len;
+
+   start = sp = s;
+   end = ep = s + sdslen(s) - 1;
+
+   while(sp<=end && strchr(cset, *sp)) sp++;
+   while(ep>start && strchr(cset, *ep)) ep--;
+   
+   len = (sp>ep) ? 0 : ((ep-sp)+ 1);
+
+   if(sh->buf != sp) memmove(sh->buf, sp, len);
+   sh->buf[len]='\0';
+   sh->len = len;
+   sh->free = sh->free+(sh->len-len);
+
+   return s;
+}
