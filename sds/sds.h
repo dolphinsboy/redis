@@ -75,5 +75,9 @@ sds sdscatfmt(sds s, const char*fmt,...);
 sds sdstrim(sds s, const char *cset);
 //按照范围获取start和end之间的字符串,支持负整数
 void sdsrange(sds s, int start, int end);
+//全部转换为小写,在config的使用,command的大小写在dict匹配的时候进行忽略,因此不需要转换
+void sdstolower(sds s);
+//全部转换为大写,stand by,暂时没有使用
+void sdstoupper(sds s);
 
 #endif

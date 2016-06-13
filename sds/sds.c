@@ -468,3 +468,19 @@ void sdsrange(sds s, int start, int end){
     sh->len = newlen;
     sh->free = sh->free-newlen+len;
 }
+
+void sdstolower(sds s){
+    size_t i = 0;
+    size_t len = sdslen(s);
+
+    for(i=0; i < len; i++){
+        s[i] = tolower(s[i]);
+    }
+}
+
+void sdstoupper(sds s){
+    size_t i, len = sdslen(s);
+    for(i = 0; i < len; i++){
+        s[i] = toupper(s[i]);
+    }
+}

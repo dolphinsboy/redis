@@ -78,8 +78,16 @@ int main(int argc, char **argv){
     sdsrange(r, 100, 200);
     printf("after sdsrange buf =%s, len = %zu, free = %zu\n", r, sdslen(r), sdsavail(r));
 
+    sds v  = sdsnew("Hello World");
+    sdstolower(v);
+    printf("after sdstolower buf =%s, len = %zu, free = %zu\n", v, sdslen(v), sdsavail(v));
+    sdstoupper(v);
+    printf("after sdstoupper buf =%s, len = %zu, free = %zu\n", v, sdslen(v), sdsavail(v));
+
     sdsfree(copy);
     sdsfree(s);
+    sdsfree(v);
+    sdsfree(u);
     sdsfree(t);
     sdsfree(e);
     sdsfree(r);
