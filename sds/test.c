@@ -88,11 +88,11 @@ int main(int argc, char **argv){
 
     printf("sizeofsds = %d\n", sizeof(sds));
 
-    char *input = "A#_B#_C";
+    char *input = "A,B,C";
     int count;
     int len= strlen(input);
     sds*tokens;
-    tokens = sdssplitlen(input, len , "#_",2, &count);
+    tokens = sdssplitlen(input, len , ",",1, &count);
 
     int i;
     for(i = 0; i < count;i++){

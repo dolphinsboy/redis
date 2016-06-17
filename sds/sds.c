@@ -531,8 +531,11 @@ sds* sdssplitlen(const char*s, int len, const char*step, int steplen, int *count
     return tokens;
 
 cleanup:
-    for(j=0; j < elements; j++)free(tokens[j]);
-    free(tokens);
-    *count=0;
-    return NULL;
+    {
+        int i;
+        for(i=0; i < elements; i++)free(tokens[i]);
+        free(tokens);
+        *count=0;
+        return NULL;
+    }
 }
