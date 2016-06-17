@@ -533,9 +533,19 @@ sds* sdssplitlen(const char*s, int len, const char*step, int steplen, int *count
 cleanup:
     {
         int i;
-        for(i=0; i < elements; i++)free(tokens[i]);
+        for(i=0; i < elements; i++)sdsfree(tokens[i]);
         free(tokens);
         *count=0;
         return NULL;
     }
+}
+
+void sdsfreesplites(sds *tokens, int count){
+    if(tokens == NULL)
+        return;
+
+    while(count--)
+        sdsfree(tokens[count]);
+
+    free(tokens);
 }

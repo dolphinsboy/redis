@@ -81,7 +81,9 @@ void sdstolower(sds s);
 void sdstoupper(sds s);
 //sds比较
 int sdscmp(const sds s1, const sds s2);
-//sdssplit
+//根据step字符串进行sds的切换,返回sds数组
 sds *sdssplitlen(const char*s, int len, const char*step, int steplen, int *count);
+//sdssplitlen切分后内存的回收
+void sdsfreesplites(sds *tokens, int count);
 
 #endif

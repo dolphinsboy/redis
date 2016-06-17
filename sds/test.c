@@ -100,6 +100,7 @@ int main(int argc, char **argv){
     }
 
     printf("count=%d\n", count);
+    sdsfreesplites(tokens, count);
 
     sdsfree(copy);
     sdsfree(s);
