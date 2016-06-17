@@ -85,5 +85,7 @@ int sdscmp(const sds s1, const sds s2);
 sds *sdssplitlen(const char*s, int len, const char*step, int steplen, int *count);
 //sdssplitlen切分后内存的回收
 void sdsfreesplites(sds *tokens, int count);
+//将字符串p进行特殊字符格式并追加到s中
+sds sdscatrepr(sds s, const char*p ,size_t len);
 
 #endif

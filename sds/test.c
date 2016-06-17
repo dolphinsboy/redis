@@ -102,6 +102,13 @@ int main(int argc, char **argv){
     printf("count=%d\n", count);
     sdsfreesplites(tokens, count);
 
+    char *pre = "\a\n\0foo\r";
+    u = sdscatrepr(sdsempty(), pre, 7);
+
+    printf("memcmp = %d\n", memcmp(u, "\"\\a\\n\\x00foo\\r\"",15));
+
+    printf("after sdscatpre buf =%s, len = %zu, free = %zu\n", u, sdslen(u), sdsavail(u));
+
     sdsfree(copy);
     sdsfree(s);
     sdsfree(v);
