@@ -484,3 +484,55 @@ void sdstoupper(sds s){
         s[i] = toupper(s[i]);
     }
 }
+
+int sdscmp(const sds s1, const sds s2){
+    size_t s1_len = sdslen(s1);
+    size_t s2_len = sdslen(s2);
+    size_t len = (s1_len < s2_len) ? s1_len : s2_len;
+
+    int cmp;
+    cmp = memcmp(s1,s2, len);
+
+    if(cmp == 0)
+        return s1_len - s2_len;
+    return cmp;
+}
+
+sds* sdssplitlen(const char*s, int len, const char*step, int steplen, int *count){
+    int elements=0, slots=5, start=0,j=0;
+    sds * tokens;
+
+    if(steplen<1 || len<=0) return NULL;
+
+    tokens = malloc(sizeof(sds)*slots);
+    if(tokens == NULL) return NULL;
+
+    for(j = 0; j < (len-(steplen-1));j++){
+        if(slots<elements+2){
+            sds* newtokens;
+            newtokens = realloc(tokens, sizeof(sds)*slots);
+            if(newtokens == NULL) goto cleanup;
+            slots *= 2;
+            tokens = newtokens;
+        }
+
+        if((steplen==1&&*(s+j) == step[0]) || memcmp(s+j, step, steplen)==0){
+            tokens[elements] = sdsnewlen(s+start,j-start);
+            if(tokens[elements] == NULL) goto cleanup;
+            start = j+steplen;
+            elements++;
+            j=j+steplen-1;
+        }
+    }
+
+    tokens[elements] = sdsnewlen(s+start,len-start);
+    elements++;
+    *count = elements;
+    return tokens;
+
+cleanup:
+    for(j=0; j < elements; j++)free(tokens[j]);
+    free(tokens);
+    *count=0;
+    return NULL;
+}

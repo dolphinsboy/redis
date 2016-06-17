@@ -84,6 +84,23 @@ int main(int argc, char **argv){
     sdstoupper(v);
     printf("after sdstoupper buf =%s, len = %zu, free = %zu\n", v, sdslen(v), sdsavail(v));
 
+    printf("cmp = %d\n", sdscmp(sdsnew("adb"), sdsnew("aDb")));
+
+    printf("sizeofsds = %d\n", sizeof(sds));
+
+    char *input = "A#_B#_C";
+    int count;
+    int len= strlen(input);
+    sds*tokens;
+    tokens = sdssplitlen(input, len , "#_",2, &count);
+
+    int i;
+    for(i = 0; i < count;i++){
+        printf("%s\n",*(tokens+i));
+    }
+
+    printf("count=%d\n", count);
+
     sdsfree(copy);
     sdsfree(s);
     sdsfree(v);

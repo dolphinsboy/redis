@@ -79,5 +79,9 @@ void sdsrange(sds s, int start, int end);
 void sdstolower(sds s);
 //全部转换为大写,stand by,暂时没有使用
 void sdstoupper(sds s);
+//sds比较
+int sdscmp(const sds s1, const sds s2);
+//sdssplit
+sds *sdssplitlen(const char*s, int len, const char*step, int steplen, int *count);
 
 #endif
