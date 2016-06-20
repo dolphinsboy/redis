@@ -109,6 +109,10 @@ int main(int argc, char **argv){
 
     printf("after sdscatpre buf =%s, len = %zu, free = %zu\n", u, sdslen(u), sdsavail(u));
 
+    sds h = sdsnew("hello\r\n");
+    h = sdsmapchars(h, "ho\r\n", "1234", 4);
+    printf("after sdsmapchars buf =%s, len = %zu, free = %zu\n", h, sdslen(h), sdsavail(h));
+
     sdsfree(copy);
     sdsfree(s);
     sdsfree(v);
@@ -116,6 +120,7 @@ int main(int argc, char **argv){
     sdsfree(t);
     sdsfree(e);
     sdsfree(r);
+    sdsfree(h);
 
     return 0;
 }

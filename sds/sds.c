@@ -584,7 +584,7 @@ sds sdscatrepr(sds s, const char *p, size_t len){
  * is a valid hex digit. */
 int is_hex_digit(char c) { 
     return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') ||
-    ¦   ¦  (c >= 'A' && c <= 'F');
+            (c >= 'A' && c <= 'F');
 }
 
 /* Helper function for sdssplitargs() that converts a hex digit into an
@@ -703,13 +703,13 @@ sds *sdssplitargs(const char *line, int *argc) {
                 if (*p) p++;
             }
             /* add the token to the vector */
-            vector = zrealloc(vector,((*argc)+1)*sizeof(char*));
+            vector = realloc(vector,((*argc)+1)*sizeof(char*));
             vector[*argc] = current;
             (*argc)++;
             current = NULL;
         } else {
             /* Even on empty input string return something not NULL. */
-            if (vector == NULL) vector = zmalloc(sizeof(void*));
+            if (vector == NULL) vector = malloc(sizeof(void*));
             return vector;
         }
     }
@@ -717,8 +717,21 @@ sds *sdssplitargs(const char *line, int *argc) {
 err:
     while((*argc)--)
         sdsfree(vector[*argc]);
-    zfree(vector);
+    free(vector);
     if (current) sdsfree(current);
     *argc = 0;
     return NULL;
+}
+//from和to的字符串长度都需要是一样的,setlen可以小于等于from的字符串长度
+sds sdsmapchars(sds s, const char*from, const char*to, size_t setlen){
+    int i,j,l = sdslen(s);
+
+    for(j = 0; j < l; j++)
+        for(i = 0; i < setlen; i++){
+            if(s[j] == from[i])
+                s[j] = to[i];
+            
+        }
+
+    return s;
 }
