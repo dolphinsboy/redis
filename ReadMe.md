@@ -57,3 +57,15 @@ OK
 1) "admin-hosts"
 2) "127.0.0.1 10.30.6.49 10.30.6.217"
 ```
+
++ admin-hosts的参数输入方式
+
+```bash
+[guosong@dev-00 redis3050]$ grep 'admin-hosts' conf/r3050.conf  --color
+admin-hosts "127.0.0.1" "10.30.6.49" "10.30.6.217"
+[guosong@dev-00 redis3050]$ echo "config get *" | redis-cli -p 3050  |grep -A 1 'admin-hosts' --color
+admin-hosts
+127.0.0.1 10.30.6.49 10.30.6.217
+```
+
+关键点在于sds中的sdssplitargs函数
