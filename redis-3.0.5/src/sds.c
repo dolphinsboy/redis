@@ -834,6 +834,7 @@ sds *sdssplitargs(const char *line, int *argc) {
             if (current == NULL) current = sdsempty();
             while(!done) {
                 if (inq) {
+                    //支持16进制的输入
                     if (*p == '\\' && *(p+1) == 'x' &&
                                              is_hex_digit(*(p+2)) &&
                                              is_hex_digit(*(p+3)))
@@ -961,7 +962,6 @@ sds sdsjoin(char **argv, int argc, char *sep) {
     }
     return join;
 }
-
 #ifdef SDS_TEST_MAIN
 #include <stdio.h>
 #include "testhelp.h"
