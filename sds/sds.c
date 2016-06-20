@@ -163,7 +163,7 @@ sds sdscatlen(sds s, const void *t, size_t len){
     return s;
 }
 
-sds sdscat(sds s, const sds t){
+sds sdscat(sds s, const char* t){
     return sdscatlen(s, t, strlen(t));
 }
 
@@ -733,5 +733,18 @@ sds sdsmapchars(sds s, const char*from, const char*to, size_t setlen){
             
         }
 
+    return s;
+}
+
+sds sdsjoin(char **args, int argc, char*step){
+    int j;
+    sds s = sdsempty();
+
+    for(j = 0; j < argc; j++){
+        s = sdscat(s,args[j]);
+        //倒数最后一个不需要加step
+        if(j != argc -1 )
+            s  = sdscat(s, step);
+    }
     return s;
 }

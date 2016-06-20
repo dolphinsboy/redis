@@ -54,7 +54,7 @@ sds sdsgrowzero(sds s, size_t len);
 //在现有的buf上追加len长度的字符串t
 sds sdscatlen(sds s, const void*t, size_t len);
 //在现有的buf上追加另一个sds t
-sds sdscat(sds s, const sds t);
+sds sdscat(sds s, const char* t);
 //将字符串t的前len个字符拷贝到sds s中
 sds sdscpylen(sds s, const void*t , size_t len);
 //将整个字符串t都拷贝到sds s中
@@ -91,5 +91,7 @@ sds sdscatrepr(sds s, const char*p ,size_t len);
 sds *sdssplitargs(const char *line, int *argc);
 //将from字符串中对应的字符替换成to字符串对应的字符
 sds sdsmapchars(sds s, const char*from, const char*to, size_t setlen);
+//将参数按照step进行连接返回sds字符串
+sds sdsjoin(char **args, int argc, char *step);
 
 #endif

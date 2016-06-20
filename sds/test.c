@@ -113,6 +113,14 @@ int main(int argc, char **argv){
     h = sdsmapchars(h, "ho\r\n", "1234", 4);
     printf("after sdsmapchars buf =%s, len = %zu, free = %zu\n", h, sdslen(h), sdsavail(h));
 
+    //初始化字符串二维数组
+    char *t_args[]={
+        "127.0.0.1","10.55.222.171","10.69.54.23"
+    };
+
+    sds join = sdsjoin(t_args, 3, ",");
+    printf("after sdsjoin buf =%s, len = %zu, free = %zu\n", join, sdslen(join), sdsavail(join));
+
     sdsfree(copy);
     sdsfree(s);
     sdsfree(v);
@@ -121,6 +129,7 @@ int main(int argc, char **argv){
     sdsfree(e);
     sdsfree(r);
     sdsfree(h);
+    sdsfree(join);
 
     return 0;
 }
