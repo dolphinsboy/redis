@@ -16,5 +16,8 @@ int main(int argc, char **argv)
     dict *d = dictCreate(NULL, NULL);
     print_dict(d);
 
+    dictExpand(d, 10);
+    print_dict(d);
+
     return 0;
 }

@@ -76,8 +76,10 @@ typedef void (dictScanFunction)(void *privdata, const dictEntry*de);
 //初始化dictht中table数组个数
 #define DICT_HT_INITIAL_SIZE  4
 
+#define dictIsRehashing(d) ((d)->rehashidx != -1)
 
 //--------API--------------
 dict *dictCreate(dictType * type, void *privDataPtr);
+int dictExpand(dict *d, unsigned long size);
 
 #endif
