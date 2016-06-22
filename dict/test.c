@@ -16,12 +16,5 @@ int main(int argc, char **argv)
     dict *d = dictCreate(NULL, NULL);
     print_dict(d);
 
-    if(dictExpand(d, 2) == DICT_OK){
-        print_dict(d);
-    }else{
-        printf("Failed to Expand dict\n");
-        return 1;
-    }
-
     return 0;
 }

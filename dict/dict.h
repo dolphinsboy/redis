@@ -7,118 +7,77 @@
 #define DICT_ERR 1
 
 typedef struct dictEntry{
-    //键
+    //主键值
     void *key;
-
-    //值
-    union{
+    //主键值
+    union {
         void *val;
         uint64_t u64;
         int64_t s64;
         double d;
     }v;
 
-    //指向下个哈希表节点的指针形成链表，冲突解决方案
+    //使用链表解决冲突问题
     struct dictEntry *next;
-} dictEntry;
+}dictEntry;
 
 typedef struct dictType{
-    //计算哈希值的函数
+    //Hash函数指针函数
     unsigned int (*hashFunction)(const void*key);
-    //复制键的函数
-    void *(*keyDup)(void *privdata, const void *key);
-    //复制值的函数
-    void *(*valDup)(void *privdata, const void *obj);
-    //对比键的函数
-    int (*keyCompare)(void *privdata, const void*key);
-    //销毁键的函数
+    //主键以及值复制
+    void*(*keyDup)(void *privdata, const void*key);
+    void*(*valDup)(void *privdata, const void*val);
+    //主键比较
+    int (*keyCompare)(void *privdata, const void*key1, const void*key2);
+    //主键的析构函数
     void (*keyDestructor)(void *privdata, void *key);
-    //销毁值的函数
-    void (*valDestructor)(void *privdata, void *obj);
+    //主键值的析构函数
+    void (*valDestructor)(void *privdata, void *val);
 }dictType;
 
 typedef struct dictht{
-    //哈希表数组
+    //单个hash表
     dictEntry **table;
-    //哈希表大小
+    //可容纳key的个数
     unsigned long size;
-    //哈希表大小掩码,等于size-1
+    //
     unsigned long sizemask;
-    //哈希表已有节点的数目
+    //已经存储key的个数
     unsigned long used;
 }dictht;
 
 typedef struct dict{
-    //类型特定函数
     dictType *type;
-    //私有类型
-    void *privdata;
-    //哈希表
+    //2个hash表
     dictht ht[2];
-
-    int rehashidx;
+    //
+    void *privdata;
+    //当前是否在进行rehash标识
+    long rehashidx;
+    //iter计数器
     int iterators;
 }dict;
 
+//字典迭代器
 typedef struct dictIterator{
+    //当前字典
     dict *d;
-    int table, index, safe;
+    //迭代器流水
+    long index;
+    //
     dictEntry *entry, *nextEntry;
-    long long fingerprint;
+    //
+    long long figerprint;
 }dictIterator;
 
-#define DICT_HT_INITIAL_SIZE 4
+//
+typedef void (dictScanFunction)(void *privdata, const dictEntry*de);
 
-//Macros
-#define dictFreeVal(d, entry) \
-    if((d)->type->valDestructor) \
-        (d)->type->valDestructor((d)->privdata, (entry)->v.val)
+//初始化dictht中table数组个数
+#define DICT_HT_INITIAL_SIZE  4
 
-#define dictSetVal(d, entry, _val_) do { \
-    if ((d)->type->valDup) \
-        entry->v.val = (d)->type->valDup((d)->privdata,_val_); \
-    else \
-        entry->v.val = (_val_); \
-}while(0)
 
-#define dictSetSignedIntergerVal(entry, _val_) \
-    do { entry->v.s64 = _val_; } while(0)
+//--------API--------------
+dict *dictCreate(dictType * type, void *privDataPtr);
 
-#define dictSetUnsginedIntegerVal(entry, _val_) \
-    do { entry->v.u64 = _val_; } while(0)
-
-#define dictSetDoubleVal(entry, _val_) \
-    do { entry->v.d = _val_; } while(0)
-
-#define dictFreeKey(d, entry) \
-    if ((d)->type->keyDestructor) \
-        (d)->type->keyDestructor((d)->privdata, (entry)->key); 
-
-#define dictSetKey(d, entry, _key_) do{ \
-    if ((d)->type->keyDup) \
-        entry->key = (d)->type->keyDup((d)->privdata, _key_); \
-    else \
-        entry->key = (_key_); \
-}while(0)
-
-#define dictCompareKeys(d, key1, key2) \
-    (((d)->type->keyCompare) ? \
-     (d)->type->keyCompare((d)->privdata, key1, key2) : \
-     (key1) == (key2))
-
-#define dictHashKey(d, key) (d)->type->hashFunction(key)
-#define dictGetKey(he) ((he)->key)
-#define dictGetVal(he) ((he)->v.val)
-#define dictGetSignedIntegerVal(he) ((he)->v.s64)
-#define dictGetUnsignedIntegerVal(he) ((he)->v.u64)
-#define dictGetDoubleVal(he) ((he)->v.d)
-#define dictSlots(d) ((d)->ht[0].size+(d)->ht[1].size)
-#define dictSize(d) ((d)->ht[0].used+(d)->ht[1].used)
-#define dictIsRehashing(d) ((d)->rehashidx != -1)
-
-/* API */
-dict *dictCreate(dictType *type, void *privDataPtr);
-int dictExpand(dict *d, unsigned long size);
-int dictAdd(dict *d, void *key, void *val);
-dictEntry *dictAddRaw(dict *d, void *key);
-#endif /*__DCIT_H*/
+#endif
