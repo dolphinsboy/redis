@@ -75,11 +75,31 @@ typedef void (dictScanFunction)(void *privdata, const dictEntry*de);
 
 //初始化dictht中table数组个数
 #define DICT_HT_INITIAL_SIZE  4
+#define dictCompareKeys(d, key1, key2) \
+    ((d)->type->keyCompare) ? \
+    ((d)->type->keyCompare((d)->privdata, (key1), (key2))) : (key1 == key2)
 
 #define dictIsRehashing(d) ((d)->rehashidx != -1)
+#define dictHashKey(d, key) ((d)->type->hashFunction(key))
+#define dictSetKey(d, entry, _key_) do { \
+    if ((d)->type->keyDup) \
+        entry->key = (d)->type->keyDup(d->privdata, (_key_)); \
+    else \
+        entry->key = _key_; \
+}while(0);
+
+#define dictSetVal(d, entry, _val_) do { \
+    if ((d)->type->valDup) \
+        entry->v.val = (d)->type->valDup(d->privdata, (_val_)); \
+    else \
+        entry->v.val = _val_; \
+}while(0);
+
 
 //--------API--------------
 dict *dictCreate(dictType * type, void *privDataPtr);
 int dictExpand(dict *d, unsigned long size);
+int dictAdd(dict *d, void *key, void *val);
+dictEntry *dictAddRaw(dict *d, void *key);
 
 #endif

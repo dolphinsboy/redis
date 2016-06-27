@@ -6,6 +6,7 @@
 static unsigned long _dictNextPower(unsigned long size);
 static void _dictReset(dictht *ht);
 static int _dictInit(dict *d, dictType *type, void *privDataPtr);
+static int _dictExpandIfNeeded(dict *d);
 
 dict *dictCreate(dictType *type, void *privDataPtr){
     dict *d = malloc(sizeof(*d));
@@ -67,6 +68,10 @@ int dictExpand(dict *d, unsigned long size){
     return DICT_OK;
 }
 
+static int _dictExpandIfNeeded(dict *d){
+    return DICT_OK;
+}
+
 unsigned long _dictNextPower(unsigned long size){
     unsigned long i = DICT_HT_INITIAL_SIZE;
     if(size > LONG_MAX) return LONG_MAX;
@@ -76,5 +81,62 @@ unsigned long _dictNextPower(unsigned long size){
             return i;
         i *= 2;
     }
+}
 
+int dictAdd(dict *d, void *key, void *val){
+    dictEntry *entry = dictAddRaw(d, key);
+
+    if(entry == NULL) return DICT_ERR;
+
+    dictSetVal(d, entry, val);
+    return DICT_OK;
+}
+
+static void _dictRehashStep(dict *d){
+    //if(d->iterators == 0) dictRehash(d,1);
+    if(d->iterators == 0) return;
+}
+
+//如果对应的key存在返回-1
+static int _dictKeyIndex(dict *d, void *key){
+    unsigned int h, idx, table;
+    dictEntry *he;
+
+    if(_dictExpandIfNeeded(d) == DICT_ERR)
+        return -1;
+
+    h = dictHashKey(d, key);
+
+    for(table = 0; table <= 1; table++){
+        idx = h & d->ht[table].sizemask;
+        he = d->ht[table].table[idx];
+        while(he){
+            if(dictCompareKeys(d, key, he->key))
+                return -1;
+            he = he->next;
+        }
+    }
+
+    return idx;
+}
+
+dictEntry *dictAddRaw(dict *d, void *key){
+    int index;
+    dictht *ht;
+    dictEntry *entry;
+
+    if(dictIsRehashing(d)) _dictRehashStep(d);
+    //判断是否存在
+    if((index = _dictKeyIndex(d, key)) == -1)
+        return NULL;
+
+    ht = dictIsRehashing(d) ? &d->ht[1] : &d->ht[0];
+    entry = malloc(sizeof(*entry));
+    entry->next = ht->table[index];
+    ht->used++;
+    ht->table[index] = entry;
+
+    //设置键
+    dictSetKey(d, entry, key);
+    return entry;
 }
