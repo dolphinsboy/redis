@@ -72,6 +72,9 @@ typedef struct dictIterator{
 
 //
 typedef void (dictScanFunction)(void *privdata, const dictEntry*de);
+unsigned int dictGenHashFunction(const void *key, int len);
+unsigned int dictHashFunction(const void *key);
+int _dictKeyIndex(dict *d, void *key);
 
 //初始化dictht中table数组个数
 #define DICT_HT_INITIAL_SIZE  4

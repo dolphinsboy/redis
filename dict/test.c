@@ -13,11 +13,23 @@ void print_dict(dict *d)
 
 int main(int argc, char **argv)
 {
-    dict *d = dictCreate(NULL, NULL);
+    dictType *t = NULL;
+
+    if((t = malloc(sizeof(dictType))) == NULL)
+        return -1;
+    t->hashFunction = &dictHashFunction;
+    dict *d = dictCreate(t, NULL);
     print_dict(d);
 
     dictExpand(d, 10);
     print_dict(d);
+
+    dictAdd(d, "a", "abbc");
+    dictAdd(d, "b", "abbc");
+
+    printf("idx=%d\n", _dictKeyIndex(d, "a"));
+    printf("idx=%d\n", _dictKeyIndex(d, "b"));
+    printf("idx=%d\n", _dictKeyIndex(d, "c"));
 
     return 0;
 }
