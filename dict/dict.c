@@ -153,9 +153,17 @@ int dictAdd(dict *d, void *key, void *val){
     return DICT_OK;
 }
 
+
 static void _dictRehashStep(dict *d){
     //if(d->iterators == 0) dictRehash(d,1);
     if(d->iterators == 0) return;
+}
+
+//设置dictRehash,作用待明天研究20160705
+//否则会影响_dictKeyIndex函数
+//对于dict.table[1] 的访问
+int dictRehash(dict *d, int n){
+
 }
 
 //如果对应的key存在返回-1
@@ -170,9 +178,6 @@ int _dictKeyIndex(dict *d, void *key){
 
     for(table = 0; table < 1; table++){
         idx = h & d->ht[table].sizemask;
-        if (d->ht[table].table == NULL)
-            return idx;
-
         he = d->ht[table].table[idx];
         while(he){
             if(dictCompareKeys(d, key, he->key))
