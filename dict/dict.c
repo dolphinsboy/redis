@@ -168,7 +168,7 @@ int _dictKeyIndex(dict *d, void *key){
 
     h = dictHashKey(d, key);
 
-    for(table = 0; table <= 1; table++){
+    for(table = 0; table < 1; table++){
         idx = h & d->ht[table].sizemask;
         if (d->ht[table].table == NULL)
             return idx;

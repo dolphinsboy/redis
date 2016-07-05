@@ -12,27 +12,39 @@ void print_dict(dict *d)
             d->ht[1].size);
 }
 
+int dictSdsKeyCaseCompare(void *privdata, const void *key1, const void*key2){
+    DICT_NOTUSED(privdata);
+    return strcasecmp(key1, key2) == 0;
+}
+
 int main(int argc, char **argv)
 {
-    dictType *t = NULL;
+    dictType t = {
+        dictHashFunction,
+        NULL,
+        NULL,
+        //dictSdsKeyCaseCompare,
+        NULL,
+        NULL,
+        NULL
+    };
 
     sds s = sdsnew("test");
 
-    if((t = malloc(sizeof(dictType))) == NULL)
-        return -1;
-    t->hashFunction = &dictHashFunction;
-    dict *d = dictCreate(t, NULL);
+    dict *d = dictCreate(&t, NULL);
     print_dict(d);
 
     dictExpand(d, 10);
     print_dict(d);
 
-    dictAdd(d, "a", "abbc");
+    dictAdd(d, "aa", "abbc");
     dictAdd(d, "b", "abbc");
 
-    printf("idx=%d\n", _dictKeyIndex(d, "a"));
-    printf("idx=%d\n", _dictKeyIndex(d, "b"));
-    printf("idx=%d\n", _dictKeyIndex(d, "c"));
+    printf("%s idx=%d\n", "aa", _dictKeyIndex(d, "aa"));
+    printf("%s idx=%d\n", "b", _dictKeyIndex(d, "b"));
+    printf("%s idx=%d\n", "c", _dictKeyIndex(d, "c"));
+    printf("%s idx=%d\n", "a", _dictKeyIndex(d, "a"));
+    printf("%s idx=%d\n", "d", _dictKeyIndex(d, "d"));
 
     printf("sds=%s\n", s);
 

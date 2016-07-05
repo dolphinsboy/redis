@@ -6,6 +6,8 @@
 #define DICT_OK 0
 #define DICT_ERR 1
 
+#define DICT_NOTUSED(V) ((void) V)
+
 typedef struct dictEntry{
     //主键值
     void *key;
