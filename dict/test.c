@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "dict.h"
+#include "sds.h"
 
 void print_dict(dict *d)
 {
@@ -14,6 +15,8 @@ void print_dict(dict *d)
 int main(int argc, char **argv)
 {
     dictType *t = NULL;
+
+    sds s = sdsnew("test");
 
     if((t = malloc(sizeof(dictType))) == NULL)
         return -1;
@@ -30,6 +33,10 @@ int main(int argc, char **argv)
     printf("idx=%d\n", _dictKeyIndex(d, "a"));
     printf("idx=%d\n", _dictKeyIndex(d, "b"));
     printf("idx=%d\n", _dictKeyIndex(d, "c"));
+
+    printf("sds=%s\n", s);
+
+    sdsfree(s);
 
     return 0;
 }
