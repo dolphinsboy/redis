@@ -110,6 +110,7 @@ unsigned int dictGenCaseHashFunction(const unsigned char *buf, int len){
     return hash;
 }
 
+/*----------------API-----------------------*/
 dict *dictCreate(dictType *type, void *privDataPtr){
     dict *d = malloc(sizeof(*d));
     if(d == NULL) return NULL;
@@ -140,6 +141,21 @@ int _dictInit(dict *d, dictType *type, void *privDataPtr){
 
     return DICT_OK;
 }
+
+//将dict重新resize到used大小(具体值根据2的倍数来判断)
+int dictResize(dict *d){
+   int minimal;
+
+   if(!dict_can_resize ||IsRehashing(d)) return DICT_ERR;
+
+   minimal = d->ht[0].used;
+
+   if(minimal < DICT_HT_INITIAL_SIZE)
+       minimal = DICT_HT_INITIAL_SIZE;
+
+   return dictExpand(d, minimal);
+}
+
 //扩展或者创建dictht
 int dictExpand(dict *d, unsigned long size){
     //声明新的hash表
