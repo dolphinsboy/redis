@@ -101,6 +101,15 @@ unsigned int dictHashFunction(const void *key){
     return  dictGenHashFunction(key, strlen(key));
 }   
 
+unsigned int dictGenCaseHashFunction(const unsigned char *buf, int len){
+    unsigned int hash = (unsigned int)dictGetHashFunctionSeed();
+
+    while(len--)
+        hash = ((hash << 5) + hash) + (tolower(*buf++));
+    
+    return hash;
+}
+
 dict *dictCreate(dictType *type, void *privDataPtr){
     dict *d = malloc(sizeof(*d));
     if(d == NULL) return NULL;
