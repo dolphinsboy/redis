@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include "dict.h"
 #include "sds.h"
@@ -44,6 +47,14 @@ int main(int argc, char **argv)
 
     printf("sds=%s\n", s);
     printf("val=%s\n", dictFind(d, "aa")->v);
+
+    //Seed部分
+    struct timeval tv;
+    gettimeofday(&tv,NULL);
+    //seed为下面三者的异或操作
+    printf("tv_sec=%d, tv_usec=%d pid=%d\n",tv.tv_sec, tv.tv_usec, getpid());
+    dictSetHashFunctionSeed(tv.tv_sec^tv.tv_usec^getpid());
+    printf("seed=%d\n", dictGetHashFunctionSeed());
 
     sdsfree(s);
 
