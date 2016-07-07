@@ -5,11 +5,13 @@
 #include "dict.h"
 #include "sds.h"
 
+extern  int _dictKeyIndex(dict *d, void *key);
+
 void print_dict(dict *d)
 {
-    printf("ht[0].size = %ld\nht[1].size = %ld\n",
+    printf("ht[0].size = %ld\nht[0].used = %ld\n",
             d->ht[0].size,
-            d->ht[1].size);
+            d->ht[0].used);
 }
 
 int dictSdsKeyCaseCompare(void *privdata, const void *key1, const void*key2){
@@ -32,21 +34,16 @@ int main(int argc, char **argv)
     sds s = sdsnew("test");
 
     dict *d = dictCreate(&t, NULL);
-    print_dict(d);
 
     dictExpand(d, 10);
     print_dict(d);
-
-    dictAdd(d, "aa", "abbc");
-    dictAdd(d, "b", "abbc");
-
-    printf("%s idx=%d\n", "aa", _dictKeyIndex(d, "aa"));
-    printf("%s idx=%d\n", "b", _dictKeyIndex(d, "b"));
-    printf("%s idx=%d\n", "c", _dictKeyIndex(d, "c"));
-    printf("%s idx=%d\n", "a", _dictKeyIndex(d, "a"));
-    printf("%s idx=%d\n", "d", _dictKeyIndex(d, "d"));
+    dictAdd(d, "aa", "abbcxxxxxxxxxddd");
+    print_dict(d);
+    dictAdd(d, "bd", "abbc");
+    print_dict(d);
 
     printf("sds=%s\n", s);
+    printf("val=%s\n", dictFind(d, "aa")->v);
 
     sdsfree(s);
 

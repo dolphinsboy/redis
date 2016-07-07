@@ -1,16 +1,48 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <string.h>
+#include <assert.h>
 
 #include "dict.h"
 
+//主要用于是否进行dict的Rehash操作
+static int dict_can_resize = 1; 
+static unsigned int dict_force_resize_ratio = 5; 
+
+/*--------------私有方法--------------------*/
+//用于获取刚大于size的2倍数的expand大小
 static unsigned long _dictNextPower(unsigned long size);
-static void _dictReset(dictht *ht);
+//dictInit结构体初始化
 static int _dictInit(dict *d, dictType *type, void *privDataPtr);
+//判断dict的ht是否需要扩容
 static int _dictExpandIfNeeded(dict *d);
+//获取key对应的在ht[table]中的位置
+static int _dictKeyIndex(dict *d, void *key);
+
+/*------------Hash函数相关--------------------*/
+//没有发现使用的地方
+/* Thomas Wang's 32 bit Mix Function */
+unsigned int dictIntHashFunction(unsigned int key) 
+{
+    key += ~(key << 15); 
+    key ^=  (key >> 10); 
+    key +=  (key << 3);
+    key ^=  (key >> 6);
+    key += ~(key << 11); 
+    key ^=  (key >> 16); 
+    return key; 
+}
 
 static uint32_t dict_hash_function_seed = 5381;
 
+//设置hash函数的seed,在redis启动的时候进行调用
+void dictSetHashFunctionSeed(uint32_t seed){
+	dict_hash_function_seed = seed;
+}
+
+uint32_t dictGetHashFunctionSeed(){
+    return dict_hash_function_seed;
+}
 /* MurmurHash2, by Austin Appleby
  * Note - This code makes a few assumptions about how your machine behaves -
  * 1. We can read a 4-byte value from any address without crashing
@@ -129,7 +161,25 @@ int dictExpand(dict *d, unsigned long size){
     return DICT_OK;
 }
 
-static int _dictExpandIfNeeded(dict *d){
+
+static int _dictExpandIfNeeded(dict *d)
+{
+    /* Incremental rehashing already in progress. Return. */
+    if (dictIsRehashing(d)) return DICT_OK;
+
+    /* If the hash table is empty expand it to the initial size. */
+    if (d->ht[0].size == 0) return dictExpand(d, DICT_HT_INITIAL_SIZE);
+
+    /* If we reached the 1:1 ratio, and we are allowed to resize the hash
+     * table (global setting) or we should avoid it but the ratio between
+     * elements/buckets is over the "safe" threshold, we resize doubling
+     * the number of buckets. */
+    if (d->ht[0].used >= d->ht[0].size &&
+        (dict_can_resize ||
+         d->ht[0].used/d->ht[0].size > dict_force_resize_ratio))
+    {
+        return dictExpand(d, d->ht[0].used*2);
+    }
     return DICT_OK;
 }
 
@@ -155,19 +205,59 @@ int dictAdd(dict *d, void *key, void *val){
 
 
 static void _dictRehashStep(dict *d){
-    //if(d->iterators == 0) dictRehash(d,1);
-    if(d->iterators == 0) return;
+    if(d->iterators == 0) dictRehash(d,1);
 }
 
 //设置dictRehash,作用待明天研究20160705
 //否则会影响_dictKeyIndex函数
 //对于dict.table[1] 的访问
-int dictRehash(dict *d, int n){
+int dictRehash(dict *d, int n) {
+    int empty_visits = n*10; /* Max number of empty buckets to visit. */
+    if (!dictIsRehashing(d)) return 0;
 
+    while(n-- && d->ht[0].used != 0) {
+        dictEntry *de, *nextde;
+
+        /* Note that rehashidx can't overflow as we are sure there are more
+         * elements because ht[0].used != 0 */
+        assert(d->ht[0].size > (unsigned long)d->rehashidx);
+        while(d->ht[0].table[d->rehashidx] == NULL) {
+            d->rehashidx++;
+            if (--empty_visits == 0) return 1;
+        }
+        de = d->ht[0].table[d->rehashidx];
+        /* Move all the keys in this bucket from the old to the new hash HT */
+        while(de) {
+            unsigned int h;
+
+            nextde = de->next;
+            /* Get the index in the new hash table */
+            h = dictHashKey(d, de->key) & d->ht[1].sizemask;
+            de->next = d->ht[1].table[h];
+            d->ht[1].table[h] = de;
+            d->ht[0].used--;
+            d->ht[1].used++;
+            de = nextde;
+        }
+        d->ht[0].table[d->rehashidx] = NULL;
+        d->rehashidx++;
+    }
+
+    /* Check if we already rehashed the whole table... */
+    if (d->ht[0].used == 0) {
+        free(d->ht[0].table);
+        d->ht[0] = d->ht[1];
+        _dictReset(&d->ht[1]);
+        d->rehashidx = -1;
+        return 0;
+    }
+
+    /* More to rehash... */
+    return 1;
 }
 
 //如果对应的key存在返回-1
-int _dictKeyIndex(dict *d, void *key){
+static int _dictKeyIndex(dict *d, void *key){
     unsigned int h, idx, table;
     dictEntry *he;
 
@@ -187,6 +277,28 @@ int _dictKeyIndex(dict *d, void *key){
     }
 
     return idx;
+}
+
+dictEntry *dictFind(dict *d, void *key){
+    unsigned int h, idx, table;
+    dictEntry *he;
+
+    if(d->ht[0].size == 0) return NULL;
+
+    h = dictHashKey(d, key);
+
+    for(table = 0; table <= 1; table++){
+        idx = h & d->ht[table].sizemask;
+        he = d->ht[table].table[idx];
+
+        while(he){
+            if(dictCompareKeys(d, key, he->key))
+                return he;
+            he = he->next;
+        }
+    }
+
+    return NULL;
 }
 
 dictEntry *dictAddRaw(dict *d, void *key){
