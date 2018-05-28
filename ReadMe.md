@@ -26,9 +26,9 @@ Learning Redis source code step by step
 [guosong@dev-00 ~]$ redis-cli -h 10.30.6.49 -p 3050 
 10.30.6.49:3050> flushall
 OK
-[ec2-user@service-test3 ~]$ redis-cli -h 10.30.6.49 -p 3050 
+[root@influxdb-00 redis3050]# ./bin/redis-cli -h 10.30.6.49 -p 3050 
 10.30.6.49:3050> flushall
-(error) ERR 10.30.6.183 Forbidden admin hosts 11 listlen=3 cmp=-1
+(error) ERR 10.30.24.84 Forbidden client not in admin hosts
 ```
 
 Only flushall command , other command easy to code.
